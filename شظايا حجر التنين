@@ -1,0 +1,172 @@
+quest dragon_soul begin
+	state start begin
+		when login with pc_is_novice() begin
+			if not pc_is_novice() then
+				return
+			end
+			ds.give_qualification()
+			set_state(start_soul)
+		end
+	end
+	state start_soul begin
+		when login or levelup with pc.get_level() >= 30 begin
+			setskin(NOWINDOW)
+			makequestbutton(" شظايا حجر التنين ")
+			q.set_title("وصول شظايا حجر التنين ")
+			local v = find_npc_by_vnum(20001)
+			if 0 != v then
+				target.vid("__TARGET__", v, mob_name(20001))
+			end
+		end
+		when info or button begin
+			say_title(" وصول شظايا حجر التنين : [ENTER] ")
+			say(" إن العالم الكيميائي الذي يلم بجميع أسرار معادن القارة ")
+			say(" يبحث عنك منذ فترات عديدة، عليك الذهاب إليه بسرعة [ENTER] ")
+		end
+		when 20001.chat." شظايا حجر التنين " with pc.get_level() >= 30 begin
+			local name_npc = npc.get_race()
+			local title = mob_name(name_npc)
+			--
+			target.delete("__TARGET__")
+			say_title(" "..title.." : [ENTER] ")
+			say(" ها أنت ذا! لقد اكتشفت شيئاً مذهلاً: شظية حجر التنين ")
+			say(" إن حجر التنين بلور نادر جداًوقيمته لا تقدر بأي ثمن، لأنه ")
+			say(" يملك قوة خارقة، يحكى أنه روح التنين ،، يالجماله وروعته! [ENTER] ")
+			say(" سأمنحك قوة عين التنين لتستطيع العثور على شظايا روح ")
+			say(" التنين، أحضر لي 10 شظايا التنين، لأحولها لك لحجر ضخم [ENTER] ")
+			set_state(state_learning)
+		end
+	end
+	state state_learning begin
+		when letter begin
+			setskin(NOWINDOW)
+			makequestbutton(" جمع شظايا التنين ")
+			q.set_title("قم بجمع بعض شظايا حجر التنين ")
+		end
+		when info or button begin
+			say_title(" إجمع شظايا حجر التنين : [ENTER] ")
+			say(" أحضر للكيميائي 10 من شظايا حجر التنين [ENTER] ")
+		end
+		when kill with not npc.is_pc() begin
+			if pc.count_item(30270) < 10 then
+				if drop_gamble_with_flag("ds_drop") then
+					game.drop_item_with_ownership(30270, 1, 300)
+				end
+			end
+		end
+		when 20001.chat."  قم بجمع بعض شظايا حجر التنين‎ " begin
+			local name_npc = npc.get_race()
+			local title = mob_name(name_npc)
+			--
+			say_title(" "..title.." : [ENTER] ")
+			if pc.count_item(30270) >= 10 then
+				say(" عثرت على شظايا حجر التنين؟ انتظر لحظة من فضلك .. [ENTER] ")
+				wait()
+				say_title(" "..title.." : [ENTER] ")
+				say(" ياللعجب! لقد نتج عن عملية التحويل كور دراكونيس قلب ")
+				say(" بلوري، يحمي ويحوي بداخله حجر التنين، إذا كسرته فإن ")
+				say(" حجر التنين بداخله سوف يوضع مباشرة في قائمة الجرد ")
+				say(" لكيمياء حجر التنين، ستحتاج للعثور على شظايا التنين ")
+				say(" إلى قوة عين التنين ،، بإستطاعتي أن أمنحك هذه القوة [ENTER] ")
+				say(" كل ماعليك فعله هو زيارتي يومياً، وسيكون بإمكانك عند ")
+				say(" ذاك الوقت تحويل حجر التنين بنفسك، لقد حولت لك اليوم ")
+				say(" حجراً واحداً، وسيكون بإمكانك تحويل ال2 الباقية بنفسك [ENTER] ")
+				pc.remove_item(30270, 10)
+				pc.give_item2(50255)
+				char_log(pc.get_player_id(), 'DS_QUALIFICATION', 'SUCCESS')
+				local today = math.floor(get_global_time() / 86400)
+				pc.setf("dragon_soul", "eye_timestamp", today)
+				pc.setf("dragon_soul", "eye_left", 2)
+				set_state(state_farming)
+			else
+				say(" ياهذا لا تضيع الوقت، إذهب وابحث عن شظايا حجر التنين [ENTER] ")
+			end
+		end
+	end
+	state state_farming begin
+		when letter begin
+			send_letter("قوة عين التنين ")
+		end
+		when info or button begin
+			say(string.format(" الكمية المتبقية لقوة عين التنين: % d [ENTER] ", pc.getf("dragon_soul", "eye_left")))
+		end
+		when kill with not npc.is_pc() begin
+			if drop_gamble_with_flag("ds_drop") then
+				local eye_left = pc.getf("dragon_soul", "eye_left")
+				local haved_gemstone_number = pc.count_item(30270)
+				if eye_left > haved_gemstone_number / 10 then
+					game.drop_item_with_ownership(30270, 1, 300)
+				end
+			end
+		end
+		when 30270.pick begin
+			local eye_left = pc.getf("dragon_soul", "eye_left")
+			if eye_left <= 0 then
+				return
+			end
+			if pc.count_item(30270) >= 10 then
+				pc.setf("dragon_soul", "eye_left", eye_left - 1)
+				pc.remove_item(30270, 10)
+				pc.give_item2(50255)
+				if 1 == eye_left then
+					notice_multiline(" نفذت شظايا حجر التنين ", notice)
+					set_state(state_closed_season)
+				end
+			end
+		end
+		when 20001.chat." أعطني قوة عين التنين " begin
+			local name_npc = npc.get_race()
+			local title = mob_name(name_npc)
+			--
+			say_title(" "..title.." : [ENTER] ")
+			local today = math.floor(get_global_time() / 86400)
+			if today == pc.getf("dragon_soul", "eye_timestamp") then
+				say(" أهلاً بك! لقد سبق لك وحصلت اليوم على قوة عين التنين ")
+				say(" إن العملية ترهقني بشكل كبير، لذا فلا يمكنني مساعدتك ")
+				say(" إلا مرة وحيدة في اليوم فقط، الأفضل أن تعود غداً من جديد [ENTER] ")
+			else
+				say(" أهلاً! أنت بالتأكيد تبحث عن عين التنين، أليس كذلك؟ ")
+				say(" طيب ،، خذ هاهي .. حظاً سعيداً في البحث وأرجو أن ")
+				say(" تجد مايكفي من الشظايا لتحصل على 10 من الأحجار [ENTER] ")
+				pc.setf("dragon_soul", "eye_timestamp", today)
+				pc.setf("dragon_soul", "eye_left", 10)
+			end	
+		end
+	end
+	state state_closed_season begin
+		when letter begin
+			setskin(NOWINDOW)
+			makequestbutton(" نقصان قوة التنين ")
+			q.set_title("نقصان قوة عين التنين ")
+		end
+		when info or button begin
+			say_title(" نقصان قوة عين التنين : [ENTER] ")
+			say(" لقد غادرتك قوة عين التنين .. [ENTER] ")
+			local today = math.floor(get_global_time() / 86400)
+			if today == pc.getf("dragon_soul", "eye_timestamp") then
+				say(" عد من جديد إلى الكيميائي للحصول على قوة عين التنين [ENTER] ")
+			else
+				say(" إذهب لزيارة الكيميائي لتحصل على قوة عين التنين [ENTER] ")
+			end
+		end
+		when 20001.chat." أعطني قوة عين التنين " begin
+			local name_npc = npc.get_race()
+			local title = mob_name(name_npc)
+			--
+			say_title(" "..title.." : [ENTER] ")
+			local today = math.floor(get_global_time() / 86400)
+			if today == pc.getf("dragon_soul", "eye_timestamp") then
+				say(" أهلاً بك! لقد سبق لك وحصلت اليوم على قوة عين التنين ")
+				say(" إن العملية ترهقني بشكل كبير، لذا فلا يمكنني مساعدتك ")
+				say(" إلا مرة وحيدة في اليوم فقط، الأفضل أن تعود غداً من جديد [ENTER] ")
+			else
+				say(" أهلاً! أنت بالتأكيد تبحث عن عين التنين، أليس كذلك؟ ")
+				say(" طيب ،، خذ هاهي .. حظاً سعيداً في البحث وأرجو أن ")
+				say(" تجد مايكفي من الشظايا لتحصل على 10 من الأحجار [ENTER] ")
+				pc.setf("dragon_soul", "eye_timestamp", today)
+				pc.setf("dragon_soul", "eye_left", 3)
+				set_state(state_farming)
+			end
+		end
+	end
+end
