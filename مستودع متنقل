@@ -1,0 +1,19 @@
+quest depo begin
+	state start begin
+		when letter begin
+			send_letter ( "افتح المستودع " )
+		end
+		when button or info begin
+			if pc.in_dungeon() and pc.get_map_index() >= 660000 and pc.get_map_index() < 670000 then
+				syschat("لا يمكنك فتح المستودع في برج الشيطان.")
+			elseif pc.get_map_index() == 211 then
+				syschat("لا يمكنك فتح المستودع في الطابق الثالث من زنزانة العنكبوت.")
+			elseif pc.get_map_index() >= 790000 and pc.get_map_index() < 800000 then
+				syschat("لا يمكنك فتح المستودع في معبد التنين.")
+			else
+				game.open_safebox()
+			end
+			send_letter ( "افتح المستودع " )
+		end       
+	end 
+end
