@@ -1,0 +1,19 @@
+quest dragon_soul_refine_and_shop begin
+	state start begin
+		when 20001.chat." صقل حجر كيمياء التنين " with ds.is_qualified() != 0 begin
+			local name_npc = npc.get_race()
+			local title = mob_name(name_npc)
+			say_title(" "..title.." : [ENTER] ")
+			say(" هل ترغب في صقل حجر التنين؟ هيا اقترب إذاً ")
+			say(" ولكن إعلم أولاً أن عملية الصقل هذه قد تفشل [ENTER] ")
+			say(" قد أخبرني أحدهم بشئ يسمى بحبوب التنين ")
+			say(" إنها ترفع من فرص نجاح العملية، يمكنك الحصول ")
+			say(" عليها من وراء القطعة النقدية التي تدور بالأسفل [ENTER] ")
+			ds.open_refine_window()
+		end
+		when 20001.chat." فتح متجر كيمياء التنين " with ds.is_qualified() begin
+			say(" تم فتح المتجر، إختر الآن .. [ENTER] ")
+			npc.open_shop(13)
+		end
+	end
+end
