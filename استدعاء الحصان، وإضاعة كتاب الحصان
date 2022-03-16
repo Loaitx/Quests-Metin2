@@ -1,0 +1,236 @@
+quest horse_summon begin
+	state start begin
+		function get_horse_summon_prob_pct()
+			local skill_level=pc.get_skill_level(131)
+			if skill_level==1 then
+				return 15
+			elseif skill_level==2 then
+				return 20
+			elseif skill_level==3 then
+				return 30
+			elseif skill_level==4 then
+				return 40
+			elseif skill_level==5 then
+				return 50
+			elseif skill_level==6 then
+				return 60
+			elseif skill_level==7 then
+				return 70
+			elseif skill_level==8 then
+				return 80
+			elseif skill_level==9 then
+				return 90
+			elseif skill_level>=10 then
+				return 100
+			end
+			return 10
+		end
+		when 20349.chat." لقد أضعت صورة الحصان " with horse.get_grade()==1 and pc.countitem("50051")<1 begin
+			say_title(" "..pc.get_name ().." : ")
+			say("")
+			say(" مرحبا أيها الصبي ،، أرجوك ساعدني بأقصى سرعة ")
+			say(" لأنني فقدت صورة الحصان بينما كنت منشغل بالقتال ")
+			say(" والآن، لا أستطيع استدعاء حصاني، ساعدني أرجوك .. ")
+			say("")
+			wait()
+			say_title(" صبي الإسطبل : ")
+			say("")
+			say(" حسناً حسناً، لكن إهدأ قليلاً ولا تقلق حيال هذا الأمر ")
+			say(" لأنني أستطيع تحضير صورة جديدة لحصانك بسرعة البرق ")
+			say(" ولكنها سوف تكلفك 500.000 يانغ إذا كنت ترغبت بشراءها ")
+			say("")
+			say(" هل تريد مني أن أحضر لك صورة حصان جديدة؟ ")
+			say("")
+			local b=select(" نعم، أريد ", " لا أريد الآن ")
+			say_title(" صبي الإسطبل : ")
+			say("")
+			if 1 == b then
+				if pc.get_money() >= 500000 then
+					say(" جيد، لقد تم تحضير صورة جديدة لحصانك المبتدئ ")
+					say("")
+					say_item_vnum(50051)
+					say("")
+					local b = select(" تفضل بأخذ الصورة أيها المغامر ")
+					if 1 == b then
+						pc.changemoney(-500000)
+						pc.give_item2("50051", 1)
+					end
+				else
+					say(" إنك لا تملك يانغ كافي لتحضير صورة الحصان! ")
+					say("")
+				end
+			else
+				say(" بما أنك لا تريد، لماذا جئتني إذا ؟؟ ")
+				say("")
+			end
+		end
+		when 20349.chat." لقد أضعت كتاب أسلحة الحصان " with horse.get_grade()==2 and pc.countitem("50052")<1 begin
+			say_title(" "..pc.get_name ().." : ")
+			say("")
+			say(" مرحبا أيها الصبي ،، أرجوك ساعدني بأقصى سرعة ")
+			say(" لأنني فقدت كتاب الحصان بينما كنت منشغل بالقتال ")
+			say(" والآن، لا أستطيع استدعاء حصاني، ساعدني أرجوك .. ")
+			say("")
+			wait()
+			say_title(" صبي الإسطبل : ")
+			say("")
+			say(" حسناً حسناً، لكن إهدأ قليلاً ولا تقلق حيال هذا الأمر ")
+			say(" لأنني أستطيع تحضير كتاب جديد لحصانك بسرعة البرق ")
+			say(" ولكنه سوف يكلفك 1.500.000 يانغ إذا كنت ترغب بشراءه ")
+			say("")
+			say(" هل تريد مني أن أحضر لك كتاب حصان جديد؟ ")
+			say("")
+			local b=select(" نعم، أريد ", " لا أريد الآن ")
+			say_title(" صبي الإسطبل : ")
+			say("")
+			if 1 == b then
+				if pc.get_money() >= 1500000 then
+					say(" جيد، لقد تم تحضير كتاب أسلحة جديد لحصانك المدرع ")
+					say("")
+					say_item_vnum(50052)
+					say("")
+					local b = select(" تفضل بأخذ الكتاب أيها المغامر ")
+					if 1 == b then
+						pc.changemoney(-1500000)
+						pc.give_item2("50052", 1)
+					end
+				else
+					say(" إنك لا تملك يانغ كافي لتحضير كتاب أسلحة الحصان! ")
+					say("")
+				end
+			else
+				say(" بما أنك لا تريد، لماذا جئتني إذا ؟؟ ")
+				say("")
+			end
+		end
+		when 20349.chat." لقد أضعت كتاب الحصان العسكري " with horse.get_grade()==3 and pc.countitem("50053")<1 begin
+			say_title(" "..pc.get_name ().." : ")
+			say("")
+			say(" مرحبا أيها الصبي ،، أرجوك ساعدني بأقصى سرعة ")
+			say(" لأنني فقدت كتاب الحصان بينما كنت منشغل بالقتال ")
+			say(" والآن، لا أستطيع استدعاء حصاني، ساعدني أرجوك .. ")
+			say("")
+			wait()
+			say_title(" صبي الإسطبل : ")
+			say("")
+			say(" حسناً حسناً، لكن إهدأ قليلاً ولا تقلق حيال هذا الأمر ")
+			say(" لأنني أستطيع تحضير كتاب جديد لحصانك بسرعة البرق ")
+			say(" ولكنه سوف يكلفك 3.000.000 يانغ إذا كنت ترغب بشراءه ")
+			say("")
+			say(" هل تريد مني أن أحضر لك كتاب حصان جديد؟ ")
+			say("")
+			local b=select(" نعم، أريد ", " لا أريد الآن ")
+			say_title(" صبي الإسطبل : ")
+			say("")
+			if 1 == b then
+				if pc.getmoney() >= 3000000 then
+					say(" جيد، لقد تم تحضير كتاب جديد لحصانك العسكري ")
+					say("")
+					say_item_vnum(50053)
+					say("")
+					local b = select(" تفضل بأخذ الكتاب أيها المغامر ")
+					if 1 == b then
+						pc.changemoney(-3000000)
+						pc.give_item2("50053", 1)
+					end
+				else
+					say(" إنك لا تملك يانغ كافي لتحضير كتاب الحصان العسكري! ")
+					say("")
+				end
+			else
+				say(" بما أنك لا تريد، لماذا جئتني إذا ؟؟ ")
+				say("")
+			end
+		end
+		when 50051.use with horse.get_grade() == 1 begin
+			if pc.is_riding() == true and horse.is_riding() == 0 then
+				syschat(" لإستدعاء الحصان عليك النزول عن الدابة أولاً ")
+				return
+			end	
+			if horse.is_summon() or horse.is_riding() == 1 then
+				syschat(" لا يمكنك استدعاء حصانك أثناء تواجده ")
+			else	
+				if pc.getsp() >= 100 then
+					if number(1, 100) <= horse_summon.get_horse_summon_prob_pct() then
+						syschat(" تم استدعاء الحصان المبتدئ بنجاح ")
+						horse.summon()
+					else
+						syschat(" فشل استدعاء الحصان المبتدئ ")
+					end
+					pc.change_sp(-100)
+				else
+					syschat(" ليس لديك مايكفي من نقاط الأسلوب لإستدعاء حصانك المبتدئ ")
+				end
+			end		
+		end
+		when 50052.use with horse.get_grade() == 2 begin
+			if pc.is_riding() == true and horse.is_riding() == 0 then
+				syschat(" لإستدعاء الحصان عليك النزول عن الدابة أولاً ")
+				return
+			end	
+			if horse.is_summon() or horse.is_riding() == 1 then
+				syschat(" لا يمكنك استدعاء حصانك أثناء تواجده ")
+			else	
+				if pc.getsp() >= 200 then
+					if number(1, 100) <= horse_summon.get_horse_summon_prob_pct() then
+						syschat(" تم استدعاء الحصان المدرع بنجاح ")
+						horse.summon()
+					else
+						syschat(" فشل استدعاء الحصان المدرع ")
+					end
+					pc.change_sp(-200)
+				else
+					syschat(" ليس لديك مايكفي من نقاط الأسلوب لإستدعاء حصانك المدرع ")
+				end
+			end		
+		end
+		when 50053.use with horse.get_grade() == 3 begin
+			if pc.is_riding() == true and horse.is_riding() == 0 then
+				syschat(" لإستدعاء الحصان عليك النزول عن الدابة أولاً ")
+				return
+			end	
+			if horse.is_summon() or horse.is_riding() == 1 then
+				syschat(" لا يمكنك استدعاء حصانك أثناء تواجده ")
+			else	
+				if pc.getsp() >= 300 then
+					if number(1, 100) <= horse_summon.get_horse_summon_prob_pct() then
+						syschat(" تم استدعاء الحصان العسكري بنجاح ")
+						horse.summon()
+					else
+						syschat(" فشل استدعاء الحصان العسكري ")
+					end
+					pc.change_sp(-300)
+				else
+					syschat(" ليس لديك مايكفي من نقاط الأسلوب لإستدعاء حصانك العسكري ")
+				end	
+			end	
+		end
+		when 50051.use with horse.get_grade() == 0 begin
+			syschat(" مستوى حصانك مازال متدنياً لإستدعاءه بصورة الحصان ")
+		end
+		when 50051.use with horse.get_grade() == 2 begin
+			syschat(" (أداة استدعاء خاطئة) لا يمكنك استدعاء الحصان المدرع بصورة الحصان ")
+		end
+		when 50051.use with horse.get_grade() == 3 begin
+			syschat(" (أداة استدعاء خاطئة) لا يمكنك استدعاء الحصان العسكري بصورة الحصان ")
+		end
+		when 50052.use with horse.get_grade() == 0 begin
+			syschat(" مستوى حصانك مازال متدنياً لإستدعاءه بكتاب أسلحة الحصان ")
+		end
+		when 50052.use with horse.get_grade() == 1 begin
+			syschat(" (أداة استدعاء خاطئة) لا يمكنك استدعاء الحصان المبتدئ بكتاب أسلحة الحصان ")
+		end
+		when 50052.use with horse.get_grade() == 3 begin
+			syschat(" (أداة استدعاء خاطئة) لا يمكنك استدعاء الحصان العسكري بكتاب أسلحة الحصان ")
+		end
+		when 50053.use with horse.get_grade() == 0 begin
+			syschat(" مستوى حصانك مازال متدنياً لإستدعاءه بكتاب الحصان العسكري ")
+		end
+		when 50053.use with horse.get_grade() == 1 begin
+			syschat(" (أداة استدعاء خاطئة) لا يمكنك استدعاء الحصان المبتدئ بكتاب الحصان العسكري ")
+		end
+		when 50053.use with horse.get_grade() == 2 begin
+			syschat(" (أداة استدعاء خاطئة) لا يمكنك استدعاء الحصان المدرع بكتاب الحصان العسكري ")	
+		end
+	end
+end
