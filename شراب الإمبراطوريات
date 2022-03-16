@@ -1,0 +1,252 @@
+quest personal_tools begin
+	state start begin
+		when 71054.use begin -- شراب الإمبراطوريات
+			say_title(" شراب الإمبراطوريات : ")
+			say("")
+			say(" من خلال هذا البند يمكنك تغيير امبراطوريتك إلى أخرى ")
+			say(" وحكام الإمبراطوريات المجاورة يرحبون بك كمقاتل معهم ")
+			say("")
+			if get_time() < pc.getqf("change_empire_time") then
+				say("")
+			    say_reward("   < عليك الإنتظار 3 أيام لتغيير امبراطوريتك من جديد > ")
+				say("")
+				return
+			end
+			if personal_tools.move_pc() == true then
+				pc.setqf("change_empire_time", get_time() +24*60*60*3)
+			end
+		end
+		function move_pc()
+			if pc.is_polymorphed() then
+				say("")
+				say_reward("    < لا يمكنك تغيير امبراطوريتك في حال كنت متحول > ")
+				say("")
+				return false
+			end
+			if pc.is_engaged() or pc.is_married() then
+				say("")
+				say_reward("     < لا يمكنك تغيير امبراطوريتك في حال كنت متزوج > ")
+				say("")
+				return false
+			end
+			if party.is_party() or party.is_leader() then
+				say("")
+				say_reward(" < لا يمكنك تغيير امبراطوريتك في حال إنتمائك لمجموعة > ")
+				say("")
+				return false
+			end
+			if pc.has_guild() or pc.is_guild_master() then
+				say("")
+				say_reward("  < لا يمكنك تغيير امبراطوريتك في حال إنتمائك لرابطة > ")
+				say("")
+				return false
+			end
+			say(" من فضلك، إختر الإمبراطورية التي تود الإنتقال اليها: ")
+			say_reward(" يمكنك تغيير إمبراطوريتك مرة واحدة فقط كل 3 أيام ")
+			say("")
+			local s = select(" إمبراطورية الشينسو ", " إمبراطورية الشونجو ", " إمبراطورية الجينو ", " إلغاء الإختيار ")
+			if 4 == s then
+				return false 
+			end
+			local item1 = pc.count_item(71054)
+			local ret = pc.change_empire(s)
+			local oldempire = pc.get_empire()
+			local name = {" الشينسو "," الشونجو "," الجينو "}
+			say_title(" شراب الإمبراطوريات : ")
+			say("")
+			say(" هل أنت متأكد من الإنتقال إلى إمبراطورية"..name[s].." ")
+			say_reward(" لا يمكنك إبطال هذا القرار بعد إتمام عملية التغيير ")
+			say("")
+			local a = select(" نعم، تغيير الآن ", " لا، إلغاء التغيير ")
+			if 2 == a then
+				return false
+			end
+			say_title(" شراب الإمبراطوريات : ")
+			say("")
+			if item1 >= 0 and 71054 != item.vnum and item.vnum != 71054 then
+				say(" المعذرة، لقد حصل خطأ ما أثناء تغيير امبراطوريتك إلى أخرى ")
+				say(" قد يكون السبب هو عدم امتلاكك الأداة شراب الإمبراطوريات ")
+				say(" في قائمة الجرد خاصتك، أو أنك قمت بتفعيل أداة ما بجانبها ")
+				say("")
+				return false
+			end
+			if ret == 999 then
+				say(" جيد، لقد تم نقلك إلى امبراطورية"..name[s].."بنجاح ")
+				say("")
+				say_reward(" ملاحظة: قم بعمل تسجيل خروج وإعادة الدخول ")
+				say_reward(" حتى تكتمل العملية ويتم تفعيل التغيير بالكامل ")
+				say("")
+				item.remove()
+				char_log(0, "CHANGE_EMPIRE",string.format("%d -> %d", oldempire, s))
+				return true
+			else
+				say(" حدث خطأ ما عند تغيير امبراطوريتك ")
+				say(" قد يكون سبب هذا الخطأ هو الآتي: [ENTER] ")
+				say(" 1- اخترت امبراطورية تنتمي إليها فعلاً ")
+				say(" 2- لديك شخصية أخرى متزوجة أو خاطبة ")
+				say(" 3- لديك شخصية أخرى ضمن رابطة أو مجموعة ")
+				say(" 4- قمت باستعمال شراب الإمبراطوريات قبل فترة ")
+				say(" وحاولت استعماله بشخصية أخرى لتخطي قيد الوقت [ENTER] ")
+				say_reward(" يرجى التأكد جيداً من عدم توافر أحد هذه الأسباب بك [ENTER] ")
+				return false
+			end
+		end
+		when 71048.use begin -- سحر تغيير الجنس
+			local item2 = pc.count_item(71048)
+			say_title(" سحر التغيير : ")
+			say("")
+			if pc.get_level() < 50 then
+				say(" المعذرة! لا يمكنك تغيير جنسك في الوقت الحالي ")
+				say(" لإن مستواك الشخصي مازال أقل من مستوى 50 ")
+				say("")
+				return
+			end
+			if pc.is_engaged() or pc.is_married() then
+				say(" المعذرة! لا يمكنك تغيير جنسك في حال كنت متزوج ")
+				say(" عليك القيام بالطلاق أولا إذا أردت تغيير جنسك للآخر ")
+				say("")
+				return
+			end
+			if pc.is_polymorphed() then
+				say(" المعذرة! لا يمكنك تغيير جنسك في حال كنت متحول ")
+				say("")
+				return
+			end
+			if get_time() < pc.getqf("change_sex_time") then
+				say(" عليك الإنتظار 3 أيام لتغيير جنسك من جديد ")	
+				say("")
+				return
+			end
+			say(" إن هذه الأداة السحرية تمكنك من تغيير جنسك للآخر ")
+			say(" بمعنى، تغيير الجنس من رجل لإمرأة ومن إمرأة لرجل ")
+			say("")
+			say(" هل ترغب حقاً بتغيير جنسك إلى الجنس الآخر؟ ")
+			say_reward(" بإمكانك تغيير جنسك مرة واحدة فقط كل 3 أيام ")
+			say("")
+			local s = select(" نعم، تغيير الجنس "," لا، أغلق النافذة ")
+			if s == 2 then
+				return
+			end
+			say_title(" سحر التغيير : ")
+			say("")
+			if item2 >= 0 and 71048 != item.vnum and item.vnum != 71048 then
+				say(" المعذرة، لقد حصل خطأ ما أثناء تغيير جنسك للآخر ")
+				say(" قد يكون السبب هو عدم امتلاكك أداة سحر التغيير ")
+				say(" في قائمة جردك، أو أنك قمت بتفعيل أداة ما بجانبها ")
+				say("")
+				return
+			end
+			say(" جيد، لقد تمت عملية تغيير جنسك للآخر بنجاح ")
+			say("")
+			say_reward(" ملاحظة: قم بعمل تسجيل خروج وإعادة الدخول ")
+			say_reward(" حتى تكتمل العملية ويتم تفعيل التغيير بالكامل ")
+			say("")
+			item.remove()
+			pc.change_sex()
+			pc.setqf("change_sex_time", get_time() +24*60*60*3)
+			local m_sex = pc.get_sex()
+			if m_sex == 0 then
+				char_log(0, "CHANGE_SEX", "F -> M")
+			else
+				char_log(0, "CHANGE_SEX", "M -> F")
+			end
+		end
+		when 71099.use begin -- خاتم الخليفة
+			say_title(" خاتم الخليفة : ")
+			say("")
+			if not pc.is_guild_master() then
+				say(" المعذرة! هذا البند خاص بزعماء الروابط فقط ")
+				say("")
+				return
+			end
+			say(" يسمح لك خاتم الخليفة باختيار رئيس جديد للرابطة ")
+			say(" على أن يكون من ضمن رابطتك مستوفياً عدة شروط ")
+			say("")
+			say_reward("             قم بإدخال اسم الخليفة الجديد للرابطة ")
+			local name = input()
+			say_title(" خاتم الخليفة : ")
+			say("")
+			if name == pc.get_name() then
+				say(" من فضلك، أدخل اسم الخليفة وليس اسمك ")
+				say("")
+				return
+			end
+			if name == "" or nil then
+				say(" أنت لم تقم بإدخال أي اسم ")
+				say("")
+				return
+			end
+			local now_master = find_pc_by_name(name)
+			if now_master == 0 then
+				say(" إن الخليفة الجديد للرابطة غير متصل حالياً ")
+				say("")
+				say_reward(string.format(" اللاعب %s غير متصل بالوقت الحالي ", name))
+                say("")
+                return
+            end
+			if not pc.is_near_vid(now_master, 10) then
+				say(" يجب على الخليفة المختار أن يكون قريباً منك ")
+				say("")
+				return
+			end
+			local u_guild = pc.get_guild()
+			local i_tem = pc.count_item(71099)
+			local old = pc.select(now_master)
+			local h_guild = pc.get_guild()
+			local h_level = pc.get_level()
+			pc.select(old)
+			if u_guild != h_guild then
+				say(" الشخص الذي أدخلت اسمه ليس في رابطتك ")
+				say(" على الخليفة الجديد أن يكون من ضمن رابطتك ")
+				say("")
+				say_reward(string.format(" اللاعب %s ليس في رابطتك ", name))
+				say("")
+				return
+			end
+			if h_level < 40 then
+				say(" إن هذا الشخص ليس بالمستوى المناسب لإستلام القيادة ")
+				say(" لا يجب أن يكون الخليفة الجديد للرابطة أقل من مستوى 40 ")
+				say("")
+				say_reward(string.format(" اللاعب %s ليس بالمستوى المناسب ", name))
+				say("")
+				return
+			end
+			say(string.format(" لقد اخترت %s لتسليمه قيادة الرابطة ", name))
+			say("")
+			say(" هل أنت متأكد من أنه الخليفة الصحيح؟ ")
+			say("")
+			local s = select(" نعم، إنني متأكد "," ليس هو المطلوب ")
+			say_title(" خاتم الخليفة : ")
+			say("")
+			if s == 2 then
+				say(" إذا قم بإعادة المحاولة وتأكد من الإسم الصحيح ")
+				say("")
+				return
+			end
+			say(" حسنا، انتظر قليلاً لحين أخذ موافقته .. ")
+			say("")
+			local ok_sign = confirm(now_master, " اختارك "..pc.name.." لتكون الخليفة، هل تقبل؟ ", 30)
+			say_title(" خاتم الخليفة : ")
+			say("")
+			if ok_sign == CONFIRM_OK then
+				if i_tem >= 0 and 71099 != item.vnum and item.vnum != 71099 then
+					say(" لقد حصل خطأ ما أثناء اختيار خليفة جديد، قد يكون ")
+					say(" السبب هو عدم امتلاكك أداة خاتم الخليفة بقائمتك ")
+					say(" أو أنك قمت بتفعيل أداة ما بجانبها، حاول مرة أخرى ")
+					say("")
+					return
+				end
+				item.remove()
+				local old = pc.select(now_master)
+				syschat(" مبارك، لقد تم تعيينك الخليفة الجديد للرابطة ")
+				pc.select(old)
+				say(string.format(" وافق اللاعب %s وأصبح الخليفة الجديد ", name))
+				say("")
+				guild.change_master(name)
+			else
+				say(string.format(" رفض اللاعب %s استلام الخلافة للرابطة ", name))
+				say("")
+			end
+		end
+	end
+end
