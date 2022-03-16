@@ -1,0 +1,652 @@
+quest skill_group begin
+	state start begin
+		when login or levelup with pc.get_level() >=5 and pc.get_skill_group()==0 begin
+			set_state(run)
+		end
+	end
+	state run begin
+		when letter begin
+			if pc.get_job() ==0 then
+				local a = find_npc_by_vnum(20300)
+				if a != 0 then
+					target.vid("__TARGET1__", a, " أستاذ المصارعة الجسدية ( الجينو ) ")
+				end
+				local b = find_npc_by_vnum(20320)
+				if b != 0 then
+					target.vid("__TARGET2__", b, " أستاذ المصارعة الجسدية ( الشونجو ) ")
+				end
+				local c = find_npc_by_vnum(20340)
+				if c != 0 then
+					target.vid("__TARGET3__", c, " أستاذ المصارعة الجسدية ( الشينسو ) ")
+				end
+				local d = find_npc_by_vnum(20301)
+				if d != 0 then
+					target.vid("__TARGET4__", d, " أستاذ القتال الذهني ( الجينو ) ")
+				end
+				local e = find_npc_by_vnum(20321)
+				if e != 0 then
+					target.vid("__TARGET5__", e, " أستاذ القتال الذهني ( الشونجو ) ")
+				end
+				local f = find_npc_by_vnum(20341)
+				if f != 0 then
+					target.vid("__TARGET6__", f, " أستاذ القتال الذهني ( الشينسو ) ")
+				end
+			elseif pc.get_job() ==1 then
+				local a = find_npc_by_vnum(20302)
+				if a != 0 then
+					target.vid("__TARGET7__", a, " أستاذ القتال عن قرب ( الجينو ) ")
+				end
+				local b = find_npc_by_vnum(20322)
+				if b != 0 then
+					target.vid("__TARGET8__", b, " أستاذ القتال عن قرب ( الشونجو ) ")
+				end
+				local c = find_npc_by_vnum(20342)
+				if c != 0 then
+					target.vid("__TARGET9__", c, " أستاذ القتال عن قرب ( الشينسو ) ")
+				end
+				local d = find_npc_by_vnum(20303) 
+				if d != 0 then
+					target.vid("__TARGET10__", d, " أستاذ القتال عن بعد ( الجينو ) ")
+				end
+				local e = find_npc_by_vnum(20323)
+				if e != 0 then
+					target.vid("__TARGET11__", e, " أستاذ القتال عن بعد ( الشونجو ) ")
+				end
+				local f = find_npc_by_vnum(20343)
+				if f != 0 then
+					target.vid("__TARGET12__", f, " أستاذ القتال عن بعد ( الشينسو ) ")
+				end
+			elseif pc.get_job() ==2 then
+				local a = find_npc_by_vnum(20304)
+				if a != 0 then
+					target.vid("__TARGET13__", a, " أستاذ السلاح السحري ( الجينو ) ")
+				end
+				local b = find_npc_by_vnum(20324)
+				if b != 0 then
+					target.vid("__TARGET14__", b, " أستاذ السلاح السحري ( الشونجو ) ")
+				end
+				local c = find_npc_by_vnum(20344)
+				if c != 0 then
+					target.vid("__TARGET15__", c, " أستاذ السلاح السحري ( الشينسو ) ")
+				end
+				local d = find_npc_by_vnum(20305)
+				if d != 0 then
+					target.vid("__TARGET16__", d, " أستاذ السحر الأسود ( الجينو ) ")
+				end
+				local e = find_npc_by_vnum(20325)
+				if e != 0 then
+					target.vid("__TARGET17__", e, " أستاذ السحر الأسود ( الشونجو ) ")
+				end
+				local f = find_npc_by_vnum(20345)
+				if f != 0 then
+					target.vid("__TARGET18__", f, " أستاذ السحر الأسود ( الشينسو ) ")
+				end
+			elseif pc.get_job() ==3 then
+				local a = find_npc_by_vnum(20306)
+				if a != 0 then
+					target.vid("__TARGET19__", a, " أستاذ قوة التنين ( الجينو ) ")
+				end	
+				local b = find_npc_by_vnum(20326)
+				if b != 0 then
+					target.vid("__TARGET20__", b, " أستاذ قوة التنين ( الشونجو ) ")
+				end
+				local c = find_npc_by_vnum(20346)
+				if c != 0 then
+					target.vid("__TARGET21__", c, " أستاذ قوة التنين ( الشينسو ) ")
+				end
+				local d = find_npc_by_vnum(20307)
+				if d != 0 then
+					target.vid("__TARGET22__", d, " أستاذ قوة الشفاء ( الجينو ) ")
+				end
+				local e = find_npc_by_vnum(20327)
+				if e != 0 then
+					target.vid("__TARGET23__", e, " أستاذ قوة الشفاء ( الشونجو ) ")
+				end
+				
+				local f = find_npc_by_vnum(20347)
+				if f != 0 then
+					target.vid("__TARGET24__", f, " أستاذ قوة الشفاء ( الشينسو ) ")
+				end
+			end
+			send_letter(" التدريب ")
+		end
+		when button or info begin
+			if pc.get_job() ==0 then
+				say_title(" تدريب شخصية المحارب : ")
+				say("")
+				say_reward(" إذا رغبت باختيار تخصص هادف لشخصية المحارب ")
+				say_reward(" يجب عليك أولاً أن تأخذ نصيحة أساتذتك بالتدريب ")
+				say("")
+				local s = select(" نصيحة: أستاذ القتال الذهني ", " نصيحة: أستاذ المصارعة الجسدية ")
+				if s ==1 then
+					say_title(" أستاذ القتال الذهني : ")
+					say("")
+					say(" إذا رغبت بسحق مجموعة من الوحوش بضربة واحدة، وأن ")
+					say(" تكون كالصخرة أمام خصمك، فأنصحك باختيار القتال الذهني ")
+					say("")	
+					say(" أنتظرك بالساحة في أي وقت - أهلا وسهلا بك .. ")
+					say("")
+				elseif s ==2 then
+					say_title(" أستاذ المصارعة الجسدية : ")
+					say("")
+					say(" إذا رغبت بالهيمنة على عدوك من خلال تكرار هجمات سريعة ")
+					say(" وتحقيق إصابة هستيرية, فأنصحك باختيار المصارعة الجسدية ")
+					say("")
+					say(" أنتظرك بالساحة في أي وقت - أهلا وسهلا بك .. ")
+					say("")
+				end
+			elseif pc.get_job() ==1 then
+				say_title(" تدريب شخصية النينجا : ")
+				say("")
+				say_reward(" إذا رغبت باختيار تخصص هادف لشخصية النينجا ")
+				say_reward(" يجب عليك أولاً أن تأخذ نصيحة أساتذتك بالتدريب ")
+				say("")
+				local s = select(" نصيحة: أستاذ القتال عن بعد ", " نصيحة: أستاذ القتال عن قرب ")
+				if s == 1 then
+					say_title(" أستاذ القتال عن بعد : ")
+					say("")
+					say(" إذا أردت أن تصنع من نفسك رامي سهام مميز وإصابة عدوك ")
+					say(" بسهام نارية قوية ومسمومة, فأنصحك باختيار القتال عن بعد ")
+					say("")
+					say(" أنتظرك بالساحة في أي وقت - أهلا وسهلا بك .. ")
+					say("")
+				elseif s == 2 then
+					say_title(" أستاذ القتال عن قرب : ")
+					say("")
+					say(" إذا أردت التخفي بسرية وإتقان الإحترافية بضربات الخنجر ")
+					say(" الدورانية لجميع خصومك, فأنصحك باختيار القتال عن قرب ")
+					say("")
+					say(" أنتظرك بالساحة في أي وقت - أهلا وسهلا بك .. ")
+					say("")
+				end
+			elseif pc.get_job() ==2 then
+				say_title(" تدريب شخصية السورا : ")
+				say("")
+				say_reward(" إذا رغبت باختيار تخصص هادف لشخصية السورا ")
+				say_reward(" يجب عليك أولاً أن تأخذ نصيحة أساتذتك بالتدريب ")
+				say("")
+				local s = select(" نصيحة: أستاذ السحر الأسود ", " نصيحة: أستاذ السلاح السحري ")
+				if s == 1 then
+					say_title(" أستاذ السحر الأسود : ")
+					say("")
+					say(" إذا كنت تود أن تصبح ساحراً يحمي نفسه بقوة ملعونة مع ")
+					say(" حرق أعدائك بنيران الشر، فأنصحك باختيار السحر الأسود ")
+					say("")
+					say(" أنتظرك بالساحة في أي وقت - أهلا وسهلا بك .. ")
+					say("")
+				elseif s == 2 then
+					say_title(" أستاذ السلاح السحري : ")
+					say("")
+					say(" إذا كنت تود أن تصبح ساحر شيطاني عنيد لديه قدرة خارقة ")
+					say(" على إبطال قوة الأعداء, فأنصحك باختيار السلاح السحري ")
+					say("")
+					say(" أنتظرك بالساحة في أي وقت - أهلا وسهلا بك .. ")
+					say("")
+				end
+			elseif pc.get_job() ==3 then
+				say_title(" تدريب شخصية الشامان : ")
+				say("")
+				say_reward(" إذا رغبت باختيار تخصص هادف لشخصية الشامان ")
+				say_reward(" يجب عليك أولاً أن تأخذ نصيحة أساتذتك بالتدريب ")
+				say("")
+				local s = select(" نصيحة: أستاذ قوة الشفاء ", " نصيحة: أستاذ قوة التنين ")
+				if s == 1 then
+					say_title(" أستاذ قوة الشفاء : ")
+					say("")
+					say(" إذا أردت أن تخفف من بعض آلام المساكين عن طريق إعادة ")
+					say(" الإحياء وشفاء قوتهم الجسدية، فأنصحك باختيار قوة الشفاء ")
+					say("")
+					say(" أنتظرك بالساحة في أي وقت - أهلا وسهلا بك .. ")
+					say("")
+				elseif s == 2 then
+					say_title(" أستاذ قوة التنين : ")
+					say("")
+					say(" إذا أردت أن تصبح ساحراً يتقن استخدام تعاويذ سحرية قوية ")
+					say(" وبركات مساعدة لتقليص الضرر, فأنصحك باختيار قوة التنين ")
+					say("")
+					say(" أنتظرك بالساحة في أي وقت - أهلا وسهلا بك .. ")
+					say("")
+				end
+			end
+		end
+		when __TARGET1__.target.click or 20300.chat." بدأ تدريب المصارعة الجسدية " or __TARGET2__.target.click or
+			20320.chat." بدأ تدريب المصارعة الجسدية " or __TARGET3__.target.click or 20340.chat." بدأ تدريب المصارعة الجسدية " begin
+			if pc.get_job() ==0 then
+				target.delete("__TARGET1__")
+				target.delete("__TARGET2__")
+				target.delete("__TARGET3__")
+				say_title(" أستاذ المصارعة الجسدية : ")
+				say("")
+				say(" من أهم أهداف تدريب المصارعة الجسدية هو القتال السريع ")
+				say(" وتعلم أسلوب القتال الفردي مع هجمات أساسية محسنة ")
+				say("")
+				say(" هل تود البدأ بتعلم إختصاص المصارعة الجسدية الآن ؟ ")
+				say("")
+				local s=select(" إبدأ التدريب الآن ", " أتركه لوقت آخر ")
+				if 2 == s then
+					return
+				end
+				if pc.get_job()!=0 or pc.get_skill_group()!=0 then
+					test_chat("npc_is_same_job:"..bool_to_str(npc_is_same_job()))
+					test_chat("pc.get_skill_group:"..pc.get_skill_group())
+					test_chat("pc_job:"..pc.get_job())
+					return
+				end
+				set_state("start")
+				pc.set_skill_group(1)
+				pc.clear_skill()
+				char_log(0, "CLEAR_SKILL", "Clear Skill By Skill Teacher")
+				if not pc.is_clear_skill_group() then
+					target.delete("__TARGET4__")
+					target.delete("__TARGET5__")
+					target.delete("__TARGET6__")
+					say_title(" أستاذ المصارعة الجسدية : ")
+					say("")
+					say(" حسنا، بما أنك قررت الإنخراط في تعلم هذا الإختصاص ")
+					say(" فإنك سوف تحصل على 4 نقاط مهارة يمكنك استخدامها ")
+					say(" لتحسين مهارة معينة من إحدى مهاراتك بحسب إختيارك ")
+					say("")
+					say_reward("                    لقد حصلت على 4 نقاط مهارة ")
+					say("")
+				else
+					say_title(" أستاذ المصارعة الجسدية : ")
+					say("")
+					say(" عند اختيار البدأ في تعلم التدريب والحصول على المهارات ")
+					say(" فإنك لن تتلقى أبداً المزيد من نقاط المهارة، مع السلامة ")
+					say("")
+				end
+				clear_letter()
+			else
+				say_title(" أستاذ المصارعة الجسدية : ")
+				say("")
+				say(" تدريب خاطئ! يمكن للمحارب فقط إختيار هذا التدريب ")
+				say("")
+			end
+		end	
+		when __TARGET4__.target.click or 20301.chat." بدأ تدريب القتال الذهني " or __TARGET5__.target.click or
+			20321.chat." بدأ تدريب القتال الذهني " or __TARGET6__.target.click or 20341.chat." بدأ تدريب القتال الذهني " begin
+			if pc.get_job() ==0 then
+				target.delete("__TARGET4__")
+				target.delete("__TARGET5__")
+				target.delete("__TARGET6__")
+				say_title(" أستاذ القتال الذهني : ")
+				say("")
+				say(" من أهم أهداف تدريب القتال الذهني هو توجيه ضربات خارقة ")
+				say(" للأعداء عن طريق قوة التشي وصد هجمات الخصوم باحترافية ")
+				say("")
+				say(" هل تود البدأ بتعلم إختصاص القتال الذهني الآن ؟ ")
+				say("")
+				local s=select(" إبدأ التدريب الآن ", " أتركه لوقت آخر ")
+				if 2 == s then
+					return
+				end
+				if pc.get_job()!=0 or pc.get_skill_group()!=0 then
+					test_chat("npc_is_same_job:"..bool_to_str(npc_is_same_job()))
+					test_chat("pc.get_skill_group:"..pc.get_skill_group())
+					test_chat("pc_job:"..pc.get_job())
+					return
+				end
+				set_state("start")
+				pc.set_skill_group(2)
+				pc.clear_skill()
+				char_log(0, "CLEAR_SKILL", "Clear Skill By Skill Teacher")
+				if not pc.is_clear_skill_group() then
+					target.delete("__TARGET1__")
+					target.delete("__TARGET2__")
+					target.delete("__TARGET3__")
+					say_title(" أستاذ القتال الذهني : ")
+					say("")
+					say(" حسنا، بما أنك قررت الإنخراط في تعلم هذا الإختصاص ")
+					say(" فإنك سوف تحصل على 4 نقاط مهارة يمكنك استخدامها ")
+					say(" لتحسين مهارة معينة من إحدى مهاراتك بحسب إختيارك ")
+					say("")
+					say_reward("                    لقد حصلت على 4 نقاط مهارة ")
+					say("")
+				else
+					say_title(" أستاذ القتال الذهني : ")
+					say("")
+					say(" عند اختيار البدأ في تعلم التدريب والحصول على المهارات ")
+					say(" فإنك لن تتلقى أبداً المزيد من نقاط المهارة، مع السلامة ")
+					say("")
+				end
+				clear_letter()
+			else
+				say_title(" أستاذ القتال الذهني : ")
+				say("")
+				say(" تدريب خاطئ! يمكن للمحارب فقط إختيار هذا التدريب ")
+				say("")
+			end	
+		end
+		when __TARGET7__.target.click or 20302.chat." بدأ تدريب القتال عن قرب " or __TARGET8__.target.click or
+			20322.chat." بدأ تدريب القتال عن قرب " or __TARGET9__.target.click or 20342.chat." بدأ تدريب القتال عن قرب " begin
+			if pc.get_job() ==1 then
+				target.delete("__TARGET7__")
+				target.delete("__TARGET8__")
+				target.delete("__TARGET9__")
+				say_title(" أستاذ القتال عن قرب : ")
+				say("")
+				say(" يهدف تعليم القتال عن قرب تدريب النينجا على كيفية ")
+				say(" توجيه ضربات سريعة وقاتلة للعدو في جميع نقاط ضعفه ")
+				say("")
+				say(" هل تود البدأ بتعلم إختصاص القتال عن قرب الآن ؟ ")
+				say("")
+				local s=select(" إبدأ التدريب الآن ", " أتركه لوقت آخر ")
+				if 2 == s then
+					return
+				end
+				if pc.get_job()!=1 or pc.get_skill_group()!=0 then
+					test_chat("npc_is_same_job:"..bool_to_str(npc_is_same_job()))
+					test_chat("pc.get_skill_group:"..pc.get_skill_group())
+					test_chat("pc_job:"..pc.get_job())
+					return
+				end
+				set_state("start")
+				pc.set_skill_group(1)
+				pc.clear_skill()
+				char_log(0, "CLEAR_SKILL", "Clear Skill By Skill Teacher")
+				if not pc.is_clear_skill_group() then
+					target.delete("__TARGET10__")
+					target.delete("__TARGET11__")
+					target.delete("__TARGET12__")
+					say_title(" أستاذ القتال عن قرب : ")
+					say("")
+					say(" حسنا، بما أنك قررت الإنخراط في تعلم هذا الإختصاص ")
+					say(" فإنك سوف تحصل على 4 نقاط مهارة يمكنك استخدامها ")
+					say(" لتحسين مهارة معينة من إحدى مهاراتك بحسب إختيارك ")
+					say("")
+					say_reward("                    لقد حصلت على 4 نقاط مهارة ")
+					say("")
+				else
+					say_title(" أستاذ القتال عن قرب : ")
+					say("")
+					say(" عند اختيار البدأ في تعلم التدريب والحصول على المهارات ")
+					say(" فإنك لن تتلقى أبداً المزيد من نقاط المهارة، مع السلامة ")
+					say("")
+				end
+				clear_letter()
+			else
+				say_title(" أستاذ القتال عن قرب : ")
+				say("")
+				say(" تدريب خاطئ! يمكن للنينجا فقط إختيار هذا التدريب ")
+				say("")
+			end
+		end
+		when __TARGET10__.target.click or 20303.chat." بدأ تدريب القتال عن بعد " or __TARGET11__.target.click or
+			20323.chat." بدأ تدريب القتال عن بعد " or __TARGET12__.target.click or 20343.chat." بدأ تدريب القتال عن بعد " begin
+			if pc.get_job() ==1 then
+				target.delete("__TARGET10__")
+				target.delete("__TARGET11__")
+				target.delete("__TARGET12__")
+				say_title(" أستاذ القتال عن بعد : ")
+				say("")
+				say(" يهدف تدريب القتال عن بعد تدريب النينجا على كيفية ")
+				say(" مقاتلة العدو بالسهام من مسافة معينة وبطريقة محكمة ")
+				say("")
+				say(" هل تود البدأ بتعلم إختصاص القتال عن بعد الآن ؟ ")
+				say("")
+				local s=select(" إبدأ التدريب الآن ", " أتركه لوقت آخر ")
+				if 2 == s then
+					return
+				end
+				if pc.get_job()!=1 or pc.get_skill_group()!=0 then
+					test_chat("npc_is_same_job:"..bool_to_str(npc_is_same_job()))
+					test_chat("pc.get_skill_group:"..pc.get_skill_group())
+					test_chat("pc_job:"..pc.get_job())
+					return
+				end
+				set_state("start")
+				pc.set_skill_group(2)
+				pc.clear_skill()
+				char_log(0, "CLEAR_SKILL", "Clear Skill By Skill Teacher")
+				if not pc.is_clear_skill_group() then
+					target.delete("__TARGET7__")
+					target.delete("__TARGET8__")
+					target.delete("__TARGET9__")
+					say_title(" أستاذ القتال عن بعد : ")
+					say("")
+					say(" حسنا، بما أنك قررت الإنخراط في تعلم هذا الإختصاص ")
+					say(" فإنك سوف تحصل على 4 نقاط مهارة يمكنك استخدامها ")
+					say(" لتحسين مهارة معينة من إحدى مهاراتك بحسب إختيارك ")
+					say("")
+					say_reward("                    لقد حصلت على 4 نقاط مهارة ")
+					say("")
+				else
+					say_title(" أستاذ القتال عن بعد : ")
+					say("")
+					say(" عند اختيار البدأ في تعلم التدريب والحصول على المهارات ")
+					say(" فإنك لن تتلقى أبداً المزيد من نقاط المهارة، مع السلامة ")
+					say("")
+				end
+				clear_letter()
+			else
+				say_title(" أستاذ القتال عن بعد : ")
+				say("")
+				say(" تدريب خاطئ! يمكن للنينجا فقط إختيار هذا التدريب ")
+				say("")
+			end
+		end
+		when __TARGET13__.target.click or 20304.chat." بدأ تدريب السلاح السحري " or __TARGET14__.target.click or
+			20324.chat." بدأ تدريب السلاح السحري " or __TARGET15__.target.click or 20344.chat." بدأ تدريب السلاح السحري " begin
+			if pc.get_job() ==2 then
+				target.delete("__TARGET13__")
+				target.delete("__TARGET14__")
+				target.delete("__TARGET15__")
+				say_title(" أستاذ السلاح السحري : ")
+				say("")
+				say(" يتيح اختصاص السلاح السحري التدرب على فن الضربة ")
+				say(" العنيفة ضد الأعداء والوحوش، بواسطة شفرات ملعونة ")
+				say("")
+				say(" هل تود البدأ بتعلم إختصاص السلاح السحري الآن ؟ ")
+				say("")
+				local s=select(" إبدأ التدريب الآن ", " أتركه لوقت آخر ")
+				if 2 == s then
+					return
+				end
+				if pc.get_job()!=2 or pc.get_skill_group()!=0 then
+					test_chat("npc_is_same_job:"..bool_to_str(npc_is_same_job()))
+					test_chat("pc.get_skill_group:"..pc.get_skill_group())
+					test_chat("pc_job:"..pc.get_job())
+					return
+				end
+				set_state("start")
+				pc.set_skill_group(1)
+				pc.clear_skill()
+				char_log(0, "CLEAR_SKILL", "Clear Skill By Skill Teacher")
+				if not pc.is_clear_skill_group() then
+					target.delete("__TARGET16__")
+					target.delete("__TARGET17__")
+					target.delete("__TARGET18__")
+					say_title(" أستاذ السلاح السحري : ")
+					say("")
+					say(" حسنا، بما أنك قررت الإنخراط في تعلم هذا الإختصاص ")
+					say(" فإنك سوف تحصل على 4 نقاط مهارة يمكنك استخدامها ")
+					say(" لتحسين مهارة معينة من إحدى مهاراتك بحسب إختيارك ")
+					say("")
+					say_reward("                    لقد حصلت على 4 نقاط مهارة ")
+					say("")
+				else
+					say_title(" أستاذ السلاح السحري : ")
+					say("")
+					say(" عند اختيار البدأ في تعلم التدريب والحصول على المهارات ")
+					say(" فإنك لن تتلقى أبداً المزيد من نقاط المهارة، مع السلامة ")
+					say("")
+				end
+				clear_letter()
+			else
+				say_title(" أستاذ السلاح السحري : ")
+				say("")
+				say(" تدريب خاطئ! يمكن للسورا فقط إختيار هذا التدريب ")
+				say("")
+			end
+		end
+		when __TARGET16__.target.click or 20305.chat." بدأ تدريب السحر الأسود " or __TARGET17__.target.click or
+			20325.chat." بدأ تدريب السحر الأسود " or __TARGET18__.target.click or 20345.chat." بدأ تدريب السحر الأسود " begin
+			if pc.get_job() ==2 then
+				target.delete("__TARGET16__")
+				target.delete("__TARGET17__")
+				target.delete("__TARGET18__")
+				say_title(" أستاذ السحر الأسود : ")
+				say("")
+				say(" يتيح اختصاص السحر الأسود التدرب على قوة ملعونة مخيفة ")
+				say(" لإضعاف جميع الخصوم عن بعد، وإصابتهم بضربات شريرة نارية ")
+				say("")
+				say(" هل تود البدأ بتعلم إختصاص السحر الأسود الآن ؟ ")
+				say("")
+				local s=select(" إبدأ التدريب الآن ", " أتركه لوقت آخر ")
+				if 2 == s then
+					return
+				end
+				if pc.get_job()!=2 or pc.get_skill_group()!=0 then
+					test_chat("npc_is_same_job:"..bool_to_str(npc_is_same_job()))
+					test_chat("pc.get_skill_group:"..pc.get_skill_group())
+					test_chat("pc_job:"..pc.get_job())
+					return
+				end
+				set_state("start")
+				pc.set_skill_group(2)
+				pc.clear_skill()
+				char_log(0, "CLEAR_SKILL", "Clear Skill By Skill Teacher")
+				if not pc.is_clear_skill_group() then
+					target.delete("__TARGET13__")
+					target.delete("__TARGET14__")
+					target.delete("__TARGET15__")
+					say_title(" أستاذ السحر الأسود : ")
+					say("")
+					say(" حسنا، بما أنك قررت الإنخراط في تعلم هذا الإختصاص ")
+					say(" فإنك سوف تحصل على 4 نقاط مهارة يمكنك استخدامها ")
+					say(" لتحسين مهارة معينة من إحدى مهاراتك بحسب إختيارك ")
+					say("")
+					say_reward("                    لقد حصلت على 4 نقاط مهارة ")
+					say("")
+				else
+					say_title(" أستاذ السحر الأسود : ")
+					say("")
+					say(" عند اختيار البدأ في تعلم التدريب والحصول على المهارات ")
+					say(" فإنك لن تتلقى أبداً المزيد من نقاط المهارة، مع السلامة ")
+					say("")
+				end
+				clear_letter()
+			else
+				say_title(" أستاذ السحر الأسود : ")
+				say("")
+				say(" تدريب خاطئ! يمكن للسورا فقط إختيار هذا التدريب ")
+				say("")
+			end
+		end
+		when __TARGET19__.target.click or 20306.chat." بدأ تدريب قوة التنين " or __TARGET20__.target.click or
+			20326.chat." بدأ تدريب قوة التنين " or __TARGET21__.target.click or 20346.chat." بدأ تدريب قوة التنين " begin
+			if pc.get_job() ==3 then
+				target.delete("__TARGET19__")
+				target.delete("__TARGET20__")
+				target.delete("__TARGET21__")
+				say_title(" أستاذ قوة التنين : ")
+				say("")
+				say(" يهدف تدريب قوة التنين إلى تعلم هجمات التنين الأسطورية ")
+				say(" النارية والقوية, كما أنها تستعمل سحراً مؤثر يساعدك على ")
+				say(" منح حماية لنفسك أو لمجموعتك من جميع القوى الشريرة ")
+				say("")
+				say(" هل تود البدأ بتعلم إختصاص قوة التنين الآن ؟ ")
+				say("")
+				local s=select(" إبدأ التدريب الآن ", " أتركه لوقت آخر ")
+				if 2 == s then
+					return
+				end
+				if pc.get_job()!=3 or pc.get_skill_group()!=0 then
+					test_chat("npc_is_same_job:"..bool_to_str(npc_is_same_job()))
+					test_chat("pc.get_skill_group:"..pc.get_skill_group())
+					test_chat("pc_job:"..pc.get_job())
+					return
+				end
+				set_state("start")
+				pc.set_skill_group(1)
+				pc.clear_skill()
+				char_log(0, "CLEAR_SKILL", "Clear Skill By Skill Teacher")
+				if not pc.is_clear_skill_group() then
+					target.delete("__TARGET22__")
+					target.delete("__TARGET23__")
+					target.delete("__TARGET24__")	
+					say_title(" أستاذ قوة التنين : ")
+					say("")
+					say(" حسنا، بما أنك قررت الإنخراط في تعلم هذا الإختصاص ")
+					say(" فإنك سوف تحصل على 4 نقاط مهارة يمكنك استخدامها ")
+					say(" لتحسين مهارة معينة من إحدى مهاراتك بحسب إختيارك ")
+					say("")
+					say_reward("                    لقد حصلت على 4 نقاط مهارة ")
+					say("")
+				else
+					say_title(" أستاذ قوة التنين : ")
+					say("")
+					say(" عند اختيار البدأ في تعلم التدريب والحصول على المهارات ")
+					say(" فإنك لن تتلقى أبداً المزيد من نقاط المهارة، مع السلامة ")
+					say("")
+				end
+				clear_letter()
+			else
+				say_title(" أستاذ قوة التنين : ")
+				say("")
+				say(" تدريب خاطئ! يمكن للشامان فقط إختيار هذا التدريب ")
+				say("")
+			end
+		end
+		when __TARGET22__.target.click or 20307.chat." بدأ تدريب قوة الشفاء " or __TARGET23__.target.click or
+			20327.chat." بدأ تدريب قوة الشفاء " or __TARGET24__.target.click or 20347.chat." بدأ تدريب قوة الشفاء " begin
+			if pc.get_job() ==3 then
+				target.delete("__TARGET22__")
+				target.delete("__TARGET23__")
+				target.delete("__TARGET24__")
+				say_title(" أستاذ قوة الشفاء : ")
+				say("")
+				say(" يهدف تدريب قوة الشفاء إلى تخدير أعدائك بواسطة الصدمات ")
+				say(" الكهربائية, بالإضافة إلى ذلك يساعدك على تعلم كيفية علاج ")
+				say(" الحياة وزيادة القوة الجسدية لنفسك، أو لأي أحد من أتباعك ")
+				say("")
+				say(" هل تود البدأ بتعلم إختصاص قوة الشفاء الآن ؟ ")
+				say("")
+				local s=select(" إبدأ التدريب الآن ", " أتركه لوقت آخر ")
+				if 2 == s then
+					return
+				end
+				if pc.get_job()!=3 or pc.get_skill_group()!=0 then
+					test_chat("npc_is_same_job:"..bool_to_str(npc_is_same_job()))
+					test_chat("pc.get_skill_group:"..pc.get_skill_group())
+					test_chat("pc_job:"..pc.get_job())
+					return
+				end
+				set_state("start")
+				pc.set_skill_group(2)
+				pc.clear_skill()
+				char_log(0, "CLEAR_SKILL", "Clear Skill By Skill Teacher")
+				if not pc.is_clear_skill_group() then
+					target.delete("__TARGET19__")
+					target.delete("__TARGET20__")
+					target.delete("__TARGET21__")
+					say_title(" أستاذ قوة الشفاء : ")
+					say("")
+					say(" حسنا، بما أنك قررت الإنخراط في تعلم هذا الإختصاص ")
+					say(" فإنك سوف تحصل على 4 نقاط مهارة يمكنك استخدامها ")
+					say(" لتحسين مهارة معينة من إحدى مهاراتك بحسب إختيارك ")
+					say("")
+					say_reward("                    لقد حصلت على 4 نقاط مهارة ")
+					say("")
+				else
+					say_title(" أستاذ قوة الشفاء : ")
+					say("")
+					say(" عند اختيار البدأ في تعلم التدريب والحصول على المهارات ")
+					say(" فإنك لن تتلقى أبداً المزيد من نقاط المهارة، مع السلامة ")
+					say("")
+				end
+				clear_letter()
+			else
+				say_title(" أستاذ قوة الشفاء : ")
+				say("")
+				say(" تدريب خاطئ! يمكن للشامان فقط إختيار هذا التدريب ")
+				say("")
+			end			
+		end
+	end		
+	state __complete_ begin 
+		when enter begin 
+			q.done()
+		end
+	end
+end
