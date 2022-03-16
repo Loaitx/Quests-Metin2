@@ -1,0 +1,196 @@
+quest energy_system begin
+	state start begin
+		when 20001.chat." تقنية جديدة " begin
+			local name_npc = npc.get_race()
+			local title = mob_name(name_npc)
+			--
+			say_title(" "..title.." : [ENTER] ")
+			say(" لقد نجحت! تمكنت أخيراً من تطوير تقنية جديدة سوف ")
+			say(" تمكنني من تحويل الأشياء واستخراج طاقة خالصة منها [ENTER] ")
+			say(" إنه عمل مدهش ،، أليس كذلك ؟ [ENTER] ")
+			wait()
+			say_title(" "..title.." : [ENTER] ")
+			say(" إذا أقدمت على تكسير شئ ما باستعمال تقنيتي، فسوف ")
+			say(" تحصل على شظايا الطاقة، إذا جمعت 30 من هذه الشظايا ")
+			say(" وحولتها فإنك ستحصل على بلور الطاقة، بلور خالص يخفي ")
+			say(" في داخله طاقة خالصة، تنعكس على كل دروعك وأسلحتك [ENTER] ")
+			say(" ماقولك؟ عملية رهيبة أليس كذلك؟ ألا ترغب حقاً بتجربتها؟ [ENTER] ")
+			wait()
+			say_title(" "..title.." : [ENTER] ")
+			say(" أحضر لي كل ماتحصل عليه أثناء صيدك من أي نوع للأدوات ")
+			say(" كالأسلحة والحلي والملابس، وسأحولها إلى شظايا الطاقة [ENTER] ")
+			say(" إن مستقبل قارتنا يرتبط بهذه التقنية، سنصبح قوة لاتقهر [ENTER] ")
+			setstate(can_make)
+		end
+	end
+	state can_make begin
+		function setting () 
+			return
+			{
+				["prob_acc_table"] = 
+				{
+					["65to75"] = {30,55,70,80,90,95,97,98,99,100},
+					["76to85"] = {20,40,60,75,85,91,96,98,99,100},
+					["upto85"] = {10,25,45,65,80,88,94,97,99,100}
+				},
+				["item_num_table"] ={0,1,2,3,4,6,8,10,12,15},
+				["energy_stone"] = 51001,
+				["charging_stone"] = 51002
+			}
+		end	
+		function getItemNum(str, r)
+			local setting = energy_system.setting()
+			for i = 1, 10 do
+				if r < setting.prob_acc_table[str][i] then
+					return setting.item_num_table[i]
+				end
+			end
+			return 0
+		end
+		when 20001.chat." استخراج شظايا الطاقة " begin
+			local name_npc = npc.get_race()
+			local title = mob_name(name_npc)
+			--
+			say_title(" "..title.." : [ENTER] ") 
+			say(" هل نجحت العملية؟ هل حصلت على شظايا الطاقة؟ ")
+			say(" أحضر لي الأشياء وسأقوم بكسرها باستعمال الكيمياء [ENTER] ")
+			say(" إن تقنيتي مازالت في المرحلة التجريبية، لذا يمكنني ")
+			say(" أن أضمن لك عدد جيد للشظايا التي ستحصل عليها [ENTER] ")
+			wait()
+			say_title(" "..title.." : [ENTER] ")
+			say(" هناك شرط واحد ،، يجب أن لا يقل مستواك ")
+			say(" ومستوى الأشياء عن 35 - همم دعني أرى .. [ENTER] ")
+			wait()
+			say_title(" "..title.." : [ENTER] ")
+			if pc.get_level() < 35 then
+				say(" إنك لا تزال ضعيفاً! عد لاحقاً عند وصولك للمستوى 35 [ENTER] ")
+			else
+				say(" آه روعة، ممتاز! إنك قوي وغني بالتجارب ")
+				say(" والآن، أعطني أي شئ ترغب في تحويله [ENTER] ")
+			end
+		end
+		when 20001.take begin
+			local name_npc = npc.get_race()
+			local title = mob_name(name_npc)
+			--
+			say_title(" "..title.." : [ENTER] ")
+			if pc.get_level() < 35 then 
+				say(" إنك لا تزال ضعيفاً لتحمل شظايا الطاقة أو تتحكم بها ")
+				say(" من الأفضل أن تعود لاحقاً عند وصولك للمستوى 35 [ENTER] ")
+				return
+			end
+			local item_vnum = item.vnum
+			local levelLimit = item.get_level_limit(item_vnum)
+			local setting = energy_system.setting()
+			if levelLimit == nil then
+				say(" إن هذا البند غير صالح لتقنيتي، أحضر لي شيئاً آخر [ENTER] ")
+				return
+			elseif item.get_type() == ITEM_WEAPON and item.get_sub_type() == WEAPON_ARROW then
+				say(" إن هذا البند غير صالح لتقنيتي، أحضر لي شيئاً آخر [ENTER] ")
+				return
+			elseif levelLimit < 35 then
+				say(" إن هذا الشئ لا يملك مايكفي من الطاقة ،، أحضر لي ")
+				say(" شيئاً لا يقل مستواه عن 35 لأنه لا يمكنني استخراج ")
+				say(" الطاقة من الشيئ في حال كان يقل مستواه عن ذلك [ENTER] ")
+				return
+			else
+				say(" هل ترغب حقاً بتدمير ( "..item_name(item_vnum).." ) [ENTER] ")
+				local s = select(" نعم، دمره "," لا، ليس الآن ")
+				say_title(" "..title.." : [ENTER] ")
+				if s == 1 then
+					item.remove()
+					local r = number(1, 100)
+					local n
+					if levelLimit >= 65 and levelLimit <= 75 then
+						n = energy_system.getItemNum ("65to75",r)
+					elseif levelLimit > 75 and levelLimit <= 85 then
+						n = energy_system.getItemNum ("75to85",r)
+					else
+						n = energy_system.getItemNum ("upto85",r)
+					end
+					if (n == 0) then
+						say(" لقد فشلت! لم أنجح للأسف باستخراج شظايا الطاقة ")
+						say(" ولكن ،، ربما كانت محاولتي المقبلة ناجحة، أنا متفائل [ENTER] ")
+					else
+						pc.give_item2(setting.energy_stone, n)
+						say(" ياللروعة! [ENTER] ")
+						say(" نجحت في العثور على "..n.." من شظايا الطاقة، تفضل .. [ENTER] ")
+					end
+				else
+					say(" حسناً كما تريد .. ")
+				end
+			end
+		end
+		when 20001.chat." أرغب بصنع بلور الطاقة " begin
+			local name_npc = npc.get_race()
+			local title = mob_name(name_npc)
+			--
+			local setting = energy_system.setting()
+			local need = 30
+			say_title(" "..title.." : [ENTER] ")
+			say(" هل استهلكت كل مذخراتك من الطاقة؟ [ENTER] ")
+			say(" لا تحول حياتك لجحيم من شدة العمل ولا تغامر بها بالمجهول ")
+			say(" سوف أحتاج لأجل صنع بلور الطاقة إلى "..need.." من شظايا الطاقة [ENTER] ")
+			wait()
+			say_title(" "..title.." : [ENTER] ")
+			if pc.get_level() < 35 then 
+				say(" إنك لا تزال ضعيفاً! عد لاحقاً عند وصولك للمستوى 35 [ENTER] ")
+				return
+			end
+			if pc.count_item(setting.energy_stone) < need then
+				say(" إنك لم تحصل على مايكفي من شظايا الطاقة؟ [ENTER] ")
+				say(" لا يمكنني صنع بلور الطاقة من هذا العدد القليل ")
+				say(" عد إلي عند حصولك على "..need.." من شظايا الطاقة [ENTER] ")
+				return
+			else
+				say(" ممتاز، لقد أحضرت 30 من الشظايا اللازمة ")
+				say(" بإمكاني الآن صنع بلور الطاقة، انتظر لحظة ")
+				say(" سأنفذ العملية ولكني لا أضمن لك نجاحها [ENTER] ")
+				wait()
+			end
+			local charge = 1000
+			say_title(" "..title.." : [ENTER] ")
+			say(" كل شئ حاضر لتذويب الشظايا وتحويلها إلى بلور الطاقة ")
+			say(" لكن من أين لي بغذائي وتكاليف أدويتي؟ لذا فإني أطلب ")
+			say(" من صاحب الطلب تعويضاً بسيطاً بقيمة "..charge.." يانغ فقط [ENTER] ")
+			say(" هل أنت مستعد لدفعه حتى تحول الشظايا لبلور طاقة؟ [ENTER] ")
+			local s = select (" طبعاً "," ليس الآن ")
+			say_title(" "..title.." : [ENTER] ")
+			if s == 2 then
+				say(" موافق ،، وسوف أحترم قرارك .. [ENTER] ")
+				say(" عد لاحقاً إذا غيرت رأيك واحتجت لبلور الطاقة [ENTER] ")
+				return
+			end
+			if pc.get_gold() < charge then
+				say(" جيد، ولكن ليس معك يانغ كافي ")
+				say(" عد إلي مرة أخرى في وقت لاحق [ENTER] ")
+				return
+			end
+			if pc.count_item(setting.energy_stone) < need then
+				return
+			end
+			pc.change_gold(-charge)
+			pc.remove_item(setting.energy_stone, need)
+			if pc.getqf("hasExperience") == 0 then
+				say(" تفضل ،، هاهو بلور الطاقة الخاص بك .. [ENTER] ")
+				say(" تذكر بأن النجاح مضمون لأول محاولة فقط، لأن الكيمياء يعتبر ")
+				say(" عالم مليئ بالمفاجآت، وبالتالي فإن تغييرات بسيطة يمكنها ")
+				say(" أن تفشل العملية، فهناك أيضا بعض الإحتمالات البسيطة في ")
+				say(" نوعها لكنها ترافق كل عملية وتجعلها عرضة لإحتمال الفشل [ENTER] ")
+				pc.give_item2(setting.charging_stone, 1)
+				pc.setqf("hasExperience", 1)
+				return
+			end
+			local r = number(1, 100)
+			if r > 30 then
+				say(" فشلت العملية! ولم أنجح للأسف في صنع بلور الطاقة [ENTER] ")
+				say(" إن تقنيتي رائعة، لكن العملية بحد ذاتها مليئة بمخاطر ")
+				say(" مما يتسبب في فشل الخطة، أظن أننا سنوفق لاحقاً [ENTER] ")
+				return
+			end 
+			say(" لقد تنبأت بهذا ،، لا مثيل لتقنيتي .. [ENTER] ")
+			say(" تفضل بلور الطاقة، إنه حقاً تحفة! هل تشعر بالقوة؟ [ENTER] ")
+			pc.give_item2(setting.charging_stone, 1)
+		end
+	end
+end
