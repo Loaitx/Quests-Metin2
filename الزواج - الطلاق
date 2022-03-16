@@ -1,0 +1,730 @@
+quest marriage_manage begin
+    state start begin
+        when 9006.chat." إنني أرغب في الزواج " with not pc.is_engaged_or_married() and pc.countitem(70302) == 0 begin
+			say_title(" المرأة العجوز : ")
+			say("")
+			if pc.is_polymorphed() then
+				say(" إبتعد من هنا بسرعة أيها الكائن الغريب ")
+				say(" فأنا لا أقوم بتزويج البشر من الحيوانات ")
+				say("")
+				say_reward(" لا يمكن التقدم للزواج بأحد عند التحول ")
+				say("")
+				return
+			end
+			if pc.get_sex() == 1 then
+				say(" ها ها ها، أراكي ترغبين بالزواج يافتاتي الجميلة ")
+				say(" إنني حقا فرحة بقرارك هذا، فإن الزواج شئ رائع ")
+				say(" ولكن، لا يجب للفتاة أن تتقدم للزواج من الشاب ")
+				say(" بل يجب على الشاب أن يأتي ويتقدم لطلب زواج ")
+				say("")
+				say(" هيا يافتاتي، إذهبي الآن للبحث عن فتى أحلامك ")
+				say("")
+				return
+			end
+			if pc.get_level() < 25 then
+                say(" أتريد الزواج حقا! ألا تظن أن سنك مازال مبكراً على الزواج؟ ")
+				say("")
+                say(" إن الزواج مليء بالمسؤوليات, وأنت لم تبلغ سن الرشد بعد ")
+                say(" حتى بعض الأشخاص الغير راشدون غالباً مايتطلقو بسرعة ")
+                say(" ولهذا .. فأنا لن اسمح لك بذلك، ومن الأفضل لك أن تعود إلي ")
+                say(" بعد بلوغك لسن الرشد وتجلب معك عروستك لإتمام زواجكما ")
+                say("")
+                say_reward(" مستواك الحالي "..pc.get_level().." والزواج يبدأ من المستوى 25 فما فوق ")
+                say("")
+                return
+            end
+            local m_ring_num = pc.countitem(70301)
+            local m_has_ring = m_ring_num > 0
+            if not m_has_ring then
+                say(" الزواج مرحلة رائعة للبشر، ولكن أتريد أن تتزوج بدون خاتم؟ ")
+				say(" عليك أولا الحصول على خاتم الخطوبة وبعدها يمكنك الزواج ")
+                say("")
+                say_item_vnum(70301)
+                return
+            end
+			if not marriage_manage.is_equip_wedding_dress() then
+				say(" هل تود حقاً الزواج هكذا بدون أن تلبس بدلة رسمية؟ ")
+				say(" الإنسان يتزوج مرة واحدة فقط في الحياة ياولدي العزيز ")
+				say(" وعليك أن تلبس بشكل يلائم مراسم الإحتفال والزواج ")
+				say("")
+				wait()
+				say_reward("     عليك أن تلبس أنت وشريكتك بدلات الزواج الرسمية ")
+				say("")
+				say_item(" بدلة رسمية للعريس ",11901," ")
+				say_item(" بدلة رسمية للعروس ",11903," ")
+				return
+			end
+            local NEED_MONEY = 1000000
+            if pc.get_money() < NEED_MONEY then
+                say(" المعذرة ياولدي! من الواضح أنك لا تمتلك يانغ كافي ")
+                say(" لإنك سوف تحتاج إلى 1.000.000 يانغ لأجل الزواج ")
+                say("")
+                return
+            end
+			if not npc.lock() then
+                say(" هناك عرس يقام حالياً في قاعة الاعراس ")
+                say(" عليك الإنتظار قليلاً أو عد في وقت لاحق ")
+                say("")
+                return
+            end
+            say(" أهلا وسهلا بك يابني، أمر رائع حقاً أنك تفكر بالزواج ")
+            say(" وبما أنك أصبحت إنسان راشد، فسوف أكون مسرورة ")
+            say(" بتزويجك من شريك حياتك، والذي تحلم بالعيش معه ")
+			say("")
+			say("")
+            say_reward("             أكتب اسم الشريك التي تود الزواج منه ")
+            local sname = input()
+            if sname == "" or nil then
+                say_title(" المرأة العجوز : ")
+				say("")
+                say(" ماهذا؟ أنت لم تقم بإدخال اسم شريك حياتك! ")
+                say(" هل أنت متردد في مسألة الزواج من شريكك؟ ")
+                say("")
+				say(" حاول مرة أخرى يابني واكتب الإسم الصحيح ")
+                say("")
+                return
+            end
+            local u_vid = find_pc_by_name(sname)
+            local m_vid = pc.get_vid()
+			say_title(" المرأة العجوز : ")
+			say("")
+            if u_vid == 0 then
+                say(" إن الشريك الذي ترغب بالزواج منه غير متصل ")
+				say(" وأنا لا أستطيع أن أزوجكما بغياب أحد الأطراف ")
+				say("")
+                say_reward(string.format(" إن اللاعب %s غير متصل حالياً ", sname))
+                say("")
+                return
+            end
+            if not npc.is_near_vid(u_vid, 10) then
+                say(" يجب أن يكون شريك حياتك قريباً مني ")
+                say(" حتى أستطيع أخذ موافقته على الزواج ")
+                say("")
+                say_reward(string.format(" اللاعب %s بعيد عن المرأة العجوز ", sname))
+                say("")
+                return
+            end
+			local m_sex = pc.get_sex()
+			local m_level = pc.get_level()
+			local m_empire = pc.get_empire()
+			--
+			local old = pc.select(u_vid)
+			local u_sex = pc.get_sex()
+			local u_empire = pc.get_empire()
+            local u_level = pc.get_level()
+            local u_married = pc.is_married()
+			local u_engaged =  pc.is_engaged()
+            local u_has_ring = pc.countitem(70301) > 0
+			local u_has_ring2 = pc.countitem(70302) == 0
+            local u_wear = marriage_manage.is_equip_wedding_dress()
+            pc.select(old)
+			--
+            if u_vid == m_vid then
+                say(" ها ها ها ها، أتريد حقاً أن تتزوج نفسك ؟ ")
+                say(" إنها حقاً مزحة رائعة وقد أضحكتني بالفعل ")
+				say("")
+                say_reward(" قم بكتابة اسم شريك حياتك وليس اسمك ")
+                say("")
+                return
+            end
+            if u_sex == m_sex then
+                say(" ماهذا؟ أتريد أن تتزوج إنسان من نفس جنسك ")
+                say(" لا ياولدي لا ،، فهذا مخالف لتقاليدنا في القارة ")
+				say("")
+                say_reward(" لايمكن الزواج من لاعب إذا كان بنفس جنسك ")
+                say("")
+                return
+            end
+			if u_empire != m_empire then
+				say(" لحظة! إن الشخص الذي تود تزوجه من امبراطورية مختلفة ")
+				say(" ولا يمكنني تزويجكم لإن هذا مخالف لقانون الإمبراطوريات ")
+				say(" بسبب انتشار العنوسة الناتجة عن تزوج فتيات من الخارج ")
+				say("")
+				say_reward(" لا يمكنك الزواج بشخص إذا لم يكن من نفس امبراطوريتك ")
+				say("")
+                return
+            end
+            if u_married then
+                say(" المعذرة! الشخص الذي تود الزواج به متزوج بالفعل ")
+                say(" عليك العثور على شريك آخر بشرط أن يكون أعزب ")
+                say("")
+                say_reward(string.format(" إن اللاعب %s متزوج بالفعل ", sname))
+                say("")
+                return
+            end
+			if u_engaged then
+				say(" المعذرة! الشخص الذي تود الزواج به مخطوب بالفعل ")
+                say(" عليك العثور على شريك آخر بشرط أن لا يكون خاطباً ")
+                say("")
+                say_reward(string.format(" إن اللاعب %s مخطوب بالفعل ", sname))
+                say("")
+                return
+			end
+            if u_level < 25 then
+                say(" شريكك مازال قاصراً ولم يبلغ المستوى المطلوب للزواج ")
+                say(" عليه اولاً أن يبلغ المستوى 25 وبعدها يمكنك الزواج به ")
+                say("")
+                return
+            end
+            if m_level - u_level > 15 or u_level - m_level > 15 then
+                say(" أنا آسفة ،، لا أستطيع منحكم الإذن بالزواج من بعضكم ")
+                say(" لأنني لا أرغب في رؤية مشاجرات دائمة بينكما الإثنان ")
+				say("")
+                say(" فإن قانون الإمبراطورية لا يسمح بزواج شخصان من بعض ")
+                say(" في حالة كان فرق المستوى بينهم أكثر من 15 مستوى ")
+                say("")
+                return
+            end
+			if not u_has_ring2 then
+				say(" انتظر .. من الواضح أن الفتاة كانت متزوجة قبل هذا الوقت ")
+				say(" لأنني أراها تحمل في يدها خاتم الزواج الخاص بالمتزوجين ")
+				say(" رجاءاً أخبرها بأن تسلمني هذا الخاتم لأسمح لكم بالزواج ")
+				say("")
+				say_item(" خاتم الزواج ",70302," ")
+                return
+			end
+            if not u_has_ring then
+                if m_ring_num >= 2 then
+                    say(" حسنا، عليك الآن إعطاء شريكك خاتم خطوبة لإتمام الزواج ")
+                    say("")
+                else
+                    say(" الزواج هو حقاً مسألة مهمة في الحياة ")
+                    say(" ولكني لا أرى خاتم الخطوبة مع شريكك! ")
+                    say("")
+                end
+                say_item_vnum(70301)
+                say_reward("        شريكك بحاجة إلى خاتم الخطوبة لإتمام الزواج ")
+                say("")
+                return
+            end
+			if not u_wear then
+				say(" الزواج هو حقاً مسألة مهمة في الحياة ")
+				say(" ولكني لا أرى العروس تلبس بدلة رسمية ")
+				say("")
+				say_item(" فستان العروس ",11903," ")
+                say_reward("     يجب على شريكتك أن تلبس بدلة الزفاف الرسمية ")
+                say("")
+				return
+			end
+			say(" حسنا، إنتظر قليلاً لآخذ موافقة شريكتك .. ")
+			say("")
+            local ok_sign = confirm(u_vid, " يرغب "..pc.name.." أن يخطبك، هل توافقين؟  ", 30)
+			say_title(" المرأة العجوز : ")
+			say("")
+            if ok_sign == CONFIRM_OK then
+                if pc.get_gold() >= NEED_MONEY then
+					local item1 = pc.countitem(70301) > 0
+					local old = pc.select(u_vid)
+					local item2 = pc.countitem(70301) > 0
+					pc.select(old)
+					if item1 and item2 then
+						local old = pc.select(u_vid)
+						pc.removeitem(70301, 1)
+						pc.give_item2(70302, 1)
+						syschat(" لقد تم إتمام الخطوبة بينكم - عليكي الإستعداد الآن لمراسم الزواج ")
+						pc.select(old)
+						--
+						pc.change_gold(-NEED_MONEY)
+						pc.removeitem(70301, 1)
+						pc.give_item2(70302, 1)
+						say(" مبارك يابني، لقد وافق شريكك على الخطوبة منك ")
+						say(" والآن استعدو للإحتفال وإتمام مراسم الزواج بينكم ")
+						say("")
+						say(" سوف أنقلكم الآن إلى صالة الأفراح لإتمام المراسم ")
+						say("")
+						say("")
+						say_reward("          لقد حصلت أنت وشريكك على خاتم الزواج ")
+						say("")
+						wait()
+						setskin(NOWINDOW)
+						marriage.engage_to(u_vid)
+					else
+						say(" تم إلغاء الخطوبة لأن أحدكم لا يملك خاتم الخطوبة ")
+						say("")
+					end
+                else
+					say(" تم إلغاء الخطوبة لإنك لا تملك يانغ كافي ")
+					say("")
+				end
+            else
+                say(" لقد رفض شريكك الموافقة على الزواج منك ")
+                say(" إنني حقاً أراها بداية جيدة لكما ولحياتكم ")
+                say("")
+            end
+        end
+        when 9006.chat." العودة لصالة الأفراح " with pc.is_engaged() begin
+            say_title(" المرأة العجوز : ")
+			say("")
+            say(" لماذا مازلت واقفاً هنا! ما الذي تنتظره؟ ")
+			say(" هيا ،، سأدخلك الآن سريعاً لصالة الأفراح ")
+			say("")
+			say_reward(" سوف يتم نقلك لقاعة الأفراح لإتمام الزواج ")
+			say("")
+            wait()
+            setskin(NOWINDOW)
+            marriage.warp_to_my_marriage_map()
+        end
+        when 9011.chat." إتمام زواج المخطوبين " with pc.is_engaged() and marriage.in_my_wedding() begin
+			say_title(" منسقة الأعراس : ")
+			say("")
+			if pc.is_polymorphed() then
+				say(" إبتعد من هنا بسرعة أيها الكائن الغريب ")
+				say(" فأنا لا أقوم بتزويج البشر من الحيوانات ")
+				say("")
+				say_reward(" لا يمكن التقدم للزواج بأحد عند التحول ")
+				say("")
+				return
+			end
+			if not npc.lock() then
+                say(" انتظري لحظة .. إنني أتحدث إلى شريكك المخطوب ")
+                say("")
+                return
+            end
+			if pc.get_sex() == 1 then
+				say(" تمهلي ياعروستي! يجب على الشاب أن يتقدم لزواجك ")
+				say("")
+				return
+			end
+            say(" أهلا بك، إنني مسرورة بخطوبتك من الفتاة التي تحبها ")
+            say(" وسوف أكون مسرورة أكثر عندما يتم الزواج من بعضكم ")
+			say("")
+            say(" تفضل واكتب اسم فتاتك حتى أزوجكم بشكل شرعي ")
+			say("")
+			say("")
+			say_reward("             أكتب اسم الشريك التي تود الزواج منه ")
+            local sname = input()
+			if sname == "" or nil then
+				say_title(" منسقة الأعراس : ")
+                say("")
+                say(" ماهذا؟ أنت لم تقم بإدخال اسم شريك حياتك! ")
+                say(" هل أنت متردد في مسألة الزواج من شريكك؟ ")
+                say("")
+				say(" حاول مرة أخرى واكتب الإسم بالشكل الصحيح ")
+                say("")
+                return
+            end
+            local u_vid = find_pc_by_name(sname)
+            local m_vid = pc.get_vid()
+			say_title(" منسقة الأعراس : ")
+			say("")
+            if u_vid == 0 then
+                say(" إن الشريك الذي ترغب بالزواج منه غير متصل ")
+				say(" وأنا لا أستطيع أن أزوجكما بغياب أحد الأطراف ")
+				say("")
+                say_reward(string.format(" إن اللاعب %s غير متصل حالياً ", sname))
+                say("")
+                return
+            end
+            if not npc.is_near_vid(u_vid, 10) then
+                say(" يجب أن يكون شريك حياتك قريباً مني ")
+                say(" حتى أستطيع أخذ موافقته على الزواج ")
+                say("")
+                say_reward(string.format(" اللاعب %s بعيد عن منسقة الأعراس ", sname))
+                say("")
+                return
+            end
+            if u_vid == m_vid then
+                say(" ها ها ها ها، أتريد حقاً أن تتزوج نفسك ؟ ")
+                say(" إنها حقاً مزحة رائعة وقد أضحكتني بالفعل ")
+				say("")
+                say_reward(" قم بكتابة اسم شريك حياتك وليس اسمك ")
+                say("")
+                return
+            end
+            if u_vid != marriage.find_married_vid() then
+                say(" إنتظر! إن الإسم الذي أدخلته ليس اسم خطيبتك ")
+                say(" هل بإمكانك المحاولة من جديد والتأكد من الإسم ")
+                say("")
+                return
+            end
+			say(" حسنا، إنتظر قليلاً لآخذ موافقة شريكتك ")
+			say("")
+            local ok_sign = confirm(u_vid, " هل تقبلين "..pc.name.." زوجاً لك؟ ", 30)
+			say_title(" منسقة الأعراس : ")
+			say("")
+            if ok_sign != CONFIRM_OK then
+                say(" لقد رفض شريكك الموافقة على الزواج منك ")
+                say(" عليك التحدث معه للتأكيد على مسالة الزواج ")
+                say("")
+                return
+            end
+            say(" جيد، لقد أصبح كل شي في مكانه الصحيح وتم تزويجكم ")
+            say(" كما أنه يمكنك دعوة أصدقائك للإحتفال معكم في الزفاف ")
+			say("")
+			say(" أتمنى لكم حياة طيبة ومليئة بالسعادة أيها الزوجان ")
+			say("")
+			local old = pc.select(u_vid)
+			syschat(" مبارك ياعروس، لقد تم إتمام الزواج بينكم - والآن يمكنكم بدأ الإحتفال ")
+			pc.select(old)
+            marriage.set_to_marriage()
+        end
+        when 9011.chat." بدأ موسيقى الحفل " with pc.is_married() and
+		marriage.in_my_wedding() and not marriage.wedding_is_playing_music() begin
+			marriage.wedding_music(true, "wedding.mp3")
+            setskin(NOWINDOW)
+        end
+        when 9011.chat." تغيير الأجواء (ليل) " with pc.is_married() and marriage.in_my_wedding() begin
+            marriage.wedding_dark(true)
+            setskin(NOWINDOW)
+        end
+		when 9011.chat." تغيير الأجواء (نهار) " with pc.is_married() and marriage.in_my_wedding() begin
+            marriage.wedding_dark(false)
+            setskin(NOWINDOW)
+        end
+        when 9011.chat." تغيير الأجواء (ثلج) " with pc.is_married() and marriage.in_my_wedding() begin
+            marriage.wedding_snow(true)
+            setskin(NOWINDOW)
+        end
+        when 9011.chat." إعلان دعوة للزفاف " with pc.is_married() and marriage.in_my_wedding() begin
+			say_title(" منسقة الأعراس : ")
+			say("")
+            if pc.getqf("wedding_announce_time") < get_time() then
+				local old_vid = pc.get_vid()
+				local u_vid = marriage.find_married_vid()
+				if u_vid != 0 then
+					pc.select(u_vid)
+					local partner = pc.getname()
+					pc.select(old_vid)
+					notice_all(pc.name.." و "..partner.." يدعونكم لحضور حفل الزفاف الخاص بهما ")
+					notice_all(" تحدث للمرأة العجوز لحضور هذا الحفل ومشاركة العروسان فرحتهم ")
+					pc.setqf("wedding_announce_time", get_time()+60*5)
+					setskin(NOWINDOW)  
+				else
+					say(" لا يمكن نشر الإعلان لإن شريكك غير متصل ")
+					say("")
+				end
+			else
+				local remaining = pc.getqf("wedding_announce_time") - get_time()
+				say(" يمكنك الإعلان مرة أخرى بعد  "..remaining.." ثانية ")
+				say("")
+			end
+		end
+        when 9011.chat." إنهاء حفل الزواج " with pc.is_married() and marriage.in_my_wedding() begin
+			say_title(" منسقة الأعراس : ")
+			say("")
+            if not npc.lock() then
+                say(" إنتظر قليلاً, أنا أتحدث مع شريكك ")
+                say("")
+                return
+            end
+            say(" هل تود حقاً إنهاء حفل الزواج ؟ ")
+            say("")
+            local s = select(" نعم، إنهاء  "," لا أود الآن ")
+            if s == 1 then
+				say_title(" منسقة الأعراس : ")
+				say("")
+                local u_vid = marriage.find_married_vid()
+                if u_vid == 0 then
+                    say(" لا يمكن إنهاء هذا الحفل لإن شريكك غير متصل ")
+                    say(" يجب أن يكون شريكك متواجد معنا لآخذ برأيه ")
+                    say("")
+                    return
+                end
+                say(" حسنا، ولكن سوف آخذ رأيك شريكك أولاً ")
+				say("")
+                local ok_sign = confirm(u_vid, " يرغب شريكك بإنهاء حفل الزواج، هل توافق؟  ", 30)
+				say_title(" منسقة الأعراس : ")
+				say("")
+                if ok_sign == CONFIRM_OK then
+					say(" لقد وافق شريك حياتك على إنهاء هذا الحفل ")
+					say(" والآن سوف يتم نقلكم من القاعة إلى المدينة ")
+					say("")
+					wait()
+					setskin(NOWINDOW) 
+                    marriage.end_wedding()
+                else
+                    say(" لم يوافق شريك حياتك على إنهاء هذا الحفل ")
+                    say("")
+                end
+            end
+        end
+		when 11000.chat." فسخ الخطوبة بين الشريك " or 11002.chat." فسخ الخطوبة بين الشريك "
+			or 11004.chat." فسخ الخطوبة بين الشريك " with pc.is_engaged() begin
+		--
+			say_title(" حارس ساحة القرية : ")
+            say("")
+			if npc.get_empire() != pc.get_empire() then
+				say(" عذرا، لا يمكنني مساعدتك بخصوص الشئ الذي طلبته ")
+				say(" لإنك من امبراطورية مختلفة ،، هيا أغرب عن وجهي الآن ")
+				say("")
+				say_reward(" إذا كنت ترغب في طلب شئ من حارس ساحة القرية ")
+				say_reward(" عليك التوجه لحارس ساحة القرية الخاص بإمبراطوريتك ")
+				say("")
+				return
+			end
+			say(" ماهذا؟ إن زواجكم لم يكتمل بعد وترغب في فسخ الخطوبة! ")
+			say(" من الواضح أنه قد حدث شئ ما بينك وبين شريكك المخطوب ")
+			say(" ولكن لا عليك، فأنت أدرى بمصلحتك وسوف أقوم بمساعدتك ")
+			say("")
+			say(" هل ترغب حقاً في فسخ الخطوبة من الشريك ؟ ")
+			say("")
+			local a = select(" نعم، أرغب في ذلك ", " لا، تراجعت عن ذلك ")
+			say_title(" حارس ساحة القرية : ")
+            say("")
+			if a == 1 then
+				if pc.countitem(70302) == 0 then
+					say(" إذا عليك أولاً أن تحضر لي خاتم الزواج لتلبية طلبك ")
+					say("")
+					return
+				end
+				say("")
+				say(" حسنا ياهذا، لك ماطلبت وأصبحت الآن غير مخطوب ")
+				say(" وأتمنى أن تجد زوجاً مناسباً لك في المرة القادمة ")
+				say("")
+				say_reward(" تم فسخ الخطوبة من الشريك (أصبحت غير مخطوب) ")
+				say("")
+				pc.removeitem(70302, 1)
+				marriage.remove()
+			else
+				say(" إختيار جيد ياهذا، ولكن إذا لم يكن شريكك مستعد للزواج ")
+				say(" فنصيحتي لك بأن تحرر نفسك منه ولا تبقى معلقاً هكذا ")
+				say(" ومن الأفضل لك أن تقوم بفسخ الخطوبة منه لتبحث عن ")
+				say(" شريك آخر يكن جاد في مسألة الزواج ويتحمل المسؤولية ")
+				say("")
+				say_reward(" لقد تم إلغاء فسخ الخطوبة من الشريك (مازلت مخطوب) ")
+				say("")
+			end
+		end
+		when 11000.chat." طلاق زواج من جانب واحد " or 11002.chat." طلاق زواج من جانب واحد "
+			or 11004.chat." طلاق زواج من جانب واحد " with pc.is_married() begin
+		--
+			say_title(" حارس ساحة القرية : ")
+            say("")
+			if npc.get_empire() != pc.get_empire() then
+				say(" عذرا، لا يمكنني مساعدتك بخصوص الشئ الذي طلبته ")
+				say(" لإنك من امبراطورية مختلفة ،، هيا أغرب عن وجهي الآن ")
+				say("")
+				say_reward(" إذا كنت ترغب في طلب شئ من حارس ساحة القرية ")
+				say_reward(" عليك التوجه لحارس ساحة القرية الخاص بإمبراطوريتك ")
+				say("")
+				return
+			end
+            if not marriage_manage.check_divorce_time() then
+                return
+            end
+            say(" ماهذا! أترغب حقاً في الطلاق من جانب واحد فقط؟ ")
+			say(" لا أعلم لماذا تتزوجون إذا كنتم تفكرون بهذه الطريقة ")
+			say("")
+			say(" هل تود حقاً إتمام الطلاق من جانب واحد؟ ")
+			say_reward(" ستحتاج إلى 1.000.000 يانغ لإتمام الطلاق ")
+			say("")
+			local s = select(" نعم، أرغب في الطلاق ", " لا، التراجع عن الطلاق ")
+            local NEED_MONEY = 1000000
+            if s == 2 then
+                return
+            end
+			say_title(" حارس ساحة القرية : ")
+			say("")
+			if pc.countitem(70302) == 0 then
+				say(" يجب عليك إحضار خاتم الزواج لإتمام الطلاق ")
+				say("")
+				return
+			end
+            if pc.money < NEED_MONEY then
+                say(" ليس لديك مايكفي من اليانغ لإتمام عملية الطلاق ")
+                say(" وعلاوة على هذا سوف أمنحك فترة للتفكير في الامر ")
+                say("")
+                return
+            end
+            say(" ياعزيزي تمهل ولا تتعجل! فالحياة لا تؤخذ بالعجلة ")
+			say(" فكر ملياً ياهذا ،، فقد تندم كثيراً على هذا القرار ")
+			say("")
+			say(" للمرة الأخيرة، هل تود الطلاق من جانب واحد؟ ")
+			say("")
+			local c = select(" نعم، إن هذا القرار نهائي "," لا، من الأفضل أن لا أتسرع ")
+			say_title(" حارس ساحة القرية : ")
+			say("")
+            if c == 2 then
+                say(" ممتاز، إنها الطريقة الأمثل للتفكير في مثل هذه الأمور ")
+                say(" ولا تتسرع كثيراً في كل وقت، فربما تندم أكثر من ذلك ")
+                say("")
+				say_reward(" لقد تم إلغاء الطلاق ")
+				say("")
+                return
+            end
+			say(" حسنا لك ذلك, لقد تم الطلاق من جانب واحد ")
+			say(" وأصبحت الآن أعزب بدون زوج أو أي شريك حياة ")
+			say("")
+            pc.removeitem(70302, 1)
+            pc.change_gold(-NEED_MONEY)
+            marriage.remove()
+        end
+		when 11000.chat." طلاق زواج من كلا الجانبين " or 11002.chat." طلاق زواج من كلا الجانبين "
+			or 11004.chat." طلاق زواج من كلا الجانبين " with pc.is_married() begin
+		--
+			say_title(" حارس ساحة القرية : ")
+            say("")
+			if npc.get_empire() != pc.get_empire() then
+				say(" عذرا، لا يمكنني مساعدتك بخصوص الشئ الذي طلبته ")
+				say(" لإنك من امبراطورية مختلفة ،، هيا أغرب عن وجهي الآن ")
+				say("")
+				say_reward(" إذا كنت ترغب في طلب شئ من حارس ساحة القرية ")
+				say_reward(" عليك التوجه لحارس ساحة القرية الخاص بإمبراطوريتك ")
+				say("")
+				return
+			end
+            if not marriage_manage.check_divorce_time() then
+                return
+            end
+            local u_vid = marriage.find_married_vid()
+            if u_vid == 0 or not npc.is_near_vid(u_vid, 10) then
+                say(" لا يمكن الطلاق بشكل قانوني في غياب شريك حياتك ")
+                say(" يجب على شريكك التواجد لآخذ موافقتكما على الطلاق ")
+                say("")
+                return
+            end
+            say(" ياللأسف، أتريدون الإنفصال واختيار الطلاق بين بعضكم ")
+			say(" حقاً إنه لأمر محزن، ولكني لا أود أن أتدخل فيما بينكم ")
+			say(" لإن المشاكل العائلية دائماً ماتحدث بين الأزواج وتحل ")
+			say("")
+			say(" هل ترغب حقاً بإتمام الطلاق من كلا الطرفين ؟ ")
+			say_reward(" سوف تحتاج من أجل الطلاق إلى 500.000 يانغ ")
+			say("")
+			local s = select(" نعم، إتمام الطلاق ", " لا، تراجع عن الطلاق ")
+			local MONEY_NEED_FOR_ONE = 500000
+            if s == 1 then
+				say_title(" حارس ساحة القرية : ")
+				say("")
+                local m_enough_money = pc.gold >= MONEY_NEED_FOR_ONE
+                local m_have_ring = pc.countitem(70302) > 0
+                local old = pc.select(u_vid)
+                local u_enough_money = pc.gold >= MONEY_NEED_FOR_ONE
+                local u_have_ring = pc.countitem(70302) > 0
+                pc.select(old)
+                if not m_have_ring then
+                    say(" يجب عليك إحضار خاتم الزواج لإتمام الطلاق ")
+					say("")
+                    return
+                end
+                if not u_have_ring then
+                    say(" يجب على شريكك إحضار خاتم الزواج لإتمام الطلاق ")
+					say("")
+                    return
+                end
+                if not m_enough_money then
+                    say(" ليس لديك مايكفي من اليانغ لإتمام الطلاق ")
+					say("")
+					say_reward(" تحتاج إلى 500.000 يانغ لأجل إتمام الطلاق ")
+					say("")
+                    return
+                end
+                if not u_enough_money then
+                    say(" ليس لدى شريكك مايكفي من اليانغ لإتمام الطلاق ")
+					say("")
+					say_reward(" يحتاج شريكك إلى 500.000 يانغ لأجل إتمام الطلاق ")
+					say("")
+                    return
+                end
+                say(" رجاءاً لا تتسرع باتخاذ قرار مثل هذا عند وقت الغضب ")
+                say(" عليك أن تفكر ياهذا, ربما سوف تندم في المستقبل ")
+                say("")
+                say(" ها .. ماذا قلت، هل مازلت مصمم على الطلاق؟ ")
+                say("")
+                local c = select(" نعم، إن هذا قرار نهائي ", " لقد غيرت رأيي بالطلاق ")
+				if 2 == c then
+                    say_title(" حارس ساحة القرية : ")
+                    say("")
+                    say(" رائع جدا، لقد أصبت بهذا التفكير السليم ")
+                    say(" أتمنى لكم حياة طيبة بعيدة عن المشاكل ")
+                    say("")
+                    say_reward(" لقد تم إلغاء الطلاق ")
+                    say("")
+                    return
+                end
+				say_title(" حارس ساحة القرية : ")
+				say("")
+				say(" حسنا، إنتظر قليلاً لآخذ موافقة شريكك ")
+				say("")
+                local ok_sign = confirm(u_vid, " يرغب "..pc.name.." في الطلاق، هل توافق؟ ", 30)
+				say_title(" حارس ساحة القرية : ")
+				say("")
+                if ok_sign == CONFIRM_OK then
+                    local m_enough_money = pc.gold >= MONEY_NEED_FOR_ONE
+                    local m_have_ring = pc.countitem(70302) > 0
+                    local old = pc.select(u_vid)
+                    local u_enough_money = pc.gold >= MONEY_NEED_FOR_ONE
+                    local u_have_ring = pc.countitem(70302) > 0
+                    pc.select(old)
+                    if m_have_ring and m_enough_money and u_have_ring and u_enough_money then
+                        pc.removeitem(70302, 1)
+                        pc.change_money(-MONEY_NEED_FOR_ONE)
+						say(" لقد وافق شريكك على الطلاق وأصبح كل منكم أعزب ")
+						say("")
+                        local old = pc.select(u_vid)
+                        pc.removeitem(70302, 1)
+                        pc.change_money(-MONEY_NEED_FOR_ONE)
+                        syschat(" تم إتمام الطلاق بينكم وأصبح كل منكم أعزب ")
+						pc.select(old)
+                        marriage.remove()
+                    else
+						say(" تم إلغاء الطلاق لإن أحدكم لا يملك المتطلبات كاملة ")
+						say("")
+						local old = pc.select(u_vid)
+						syschat(" تم إلغاء الطلاق لإن أحدكم لا يملك المتطلبات كاملة ")
+						pc.select(old)
+                    end
+                else
+                    say(" لقد رفض شريك حياتك إتمام الطلاق فيما بينكم ")
+					say(" من فضلك ،، إتفق معه على مسألة الطلاق وعد ")
+					say("")
+					say_reward(" لقد تم الغاء الطلاق ")
+					say("")
+                end
+            end
+        end
+		when 9006.chat." تسليم خاتم الزواج " with not pc.is_engaged_or_married() and pc.count_item(70302) > 0 begin
+			say_title(" المرأة العجوز : ")
+			say("")
+			say(" عليك نسيان الأوقات السيئة بسرعة ")
+			say(" لإن الحياة لا تقف أبداً عند أي إنسان ")
+			say("")
+			say_reward(" تم إزالة خاتم الزواج منك ")
+			say("")
+			say_item(" خاتم الزواج ",70302," ")
+			pc.remove_item(70302)
+        end
+        when 9006.chat." قائمة الأعراس الحالية " with not pc.is_engaged() begin
+            local t = marriage.get_wedding_list()
+            if table.getn(t) == 0 then
+                say_title(" المرأة العجوز : ")
+                say("")
+                say(" ليس هناك أي عرس في الوقت الحالي ")
+                say("")
+            else
+                local wedding_names = {}
+                table.foreachi(t, function(n, p) wedding_names[n] = " زفاف "..p[3].." و "..p[4] end)
+                wedding_names[table.getn(t)+1] = locale.confirm
+                local s = select_table(wedding_names)
+                if s != table.getn(wedding_names) then
+                    marriage.join_wedding(t[s][1], t[s][2])
+                end
+            end
+        end
+		when 9011.click begin
+			say_title(" منسقة الأعراس : ")
+            say("")
+            say(" أهلا وسهلا، إنك في حفل الزفاف الآن ")
+            say(" نتمنى أن تستمتع معنا في هذا الحفل ")
+			say("")
+        end
+        function is_equip_wedding_dress()
+            local a = pc.get_armor()
+            return a >= 11901 and a <= 11904
+		end
+		function check_divorce_time()
+            local DIVORCE_LIMIT_TIME = 86400
+            if is_test_server() then
+                DIVORCE_LIMIT_TIME = 60
+            end
+            if marriage.get_married_time() < DIVORCE_LIMIT_TIME then
+                say(" إن حبر العقد لم يجف بعد وتود الطلاق؟ ")
+                say(" عليك الإنتظار والتفكير ثم العودة لاحقاً ")
+                say("")
+				say_reward(" عليك الإنتظار يوم كامل من أجل الطلاق ")
+				say("")
+                return false
+            end
+            return true
+        end
+    end
+end
