@@ -1,0 +1,59 @@
+quest stash begin
+	state start begin
+		when 9005.chat." إنني أرغب في استخدام المخزن " begin
+			say_title(" أمين المستودع : ")
+			say("")
+			say(" إذا كنت ترغب باستخدام المخزن، عليك دفع البعض من المال ")
+			say(" ولكن بما أن مزاجي دائماً في حالة جيدة، سوف أعرض عليك ")
+			say(" استخدام المخزن مقابل 500 يانغ فقط ،، أليس هذا رخيص ؟ ")
+			say("")
+			say(" هل تود الدفع الآن لإستخدام المخزن ؟ ")
+			say("")
+			local s = select(" نعم، أود الدفع الآن ", " لا، سوف أدفع لاحقاً ")
+			if s == 2 then
+				say_title(" أمين المستودع : ")
+				say("")
+				say(" إذا عد مرة أخرى عندما ترغب في الدفع لاستخدام المخزن ")
+				say(" وبعد ذلك .. سوف أعطيك تصريحاً لإستخدامه ،، إلى اللقاء ")
+				say("")
+			elseif s ==1 then
+				if pc.get_gold() < 500 then
+					say_title(" أمين المستودع : ")
+					say("")
+					say(" ماهذا؟ كيف تود مني أن أعطيك تصريحاً لاستخدام المخزن ")
+					say(" وانت لا تملك في جيبك 500 يانغ ؟ أعتذر منك .. عد لاحقاً ")
+					say("")
+				else
+					set_state(use)
+					pc.change_gold(-500)
+					game.set_safebox_level(1)
+					say_title(" أمين المستودع : ")
+					say("")
+					say(" حسناً, لقد تم خصم مبلغ 500 يانغ منك لإستخدام المخزن ")
+					say(" وفي حال كنت ترغب في استخدامه، عليك أن تأتي وتخبرني ")
+					say("")
+					say_reward("     كلمة السر الخاصة بمستودعك سوف تكون 000000 ")
+					say_reward("     ولكن من الأفضل لك أن تقوم بتغييرها لأسباب أمنية ")
+					say("")
+					wait()
+					setskin(NOWINDOW)
+					game.open_safebox()
+				end
+			end
+		end
+	end	
+	state use begin
+		when 9005.chat." فتح مخزن الأدوات " begin
+			setskin(NOWINDOW)
+			game.open_safebox()
+		end
+		when 9005.chat." فتح مخزن متجر البنود " begin
+			setskin(NOWINDOW)
+			game.open_mall()
+		end
+		when 9005.chat." شراء سبائك ذهب أو فضة " begin
+			setskin(NOWINDOW)
+			npc.open_shop()
+		end
+	end
+end
